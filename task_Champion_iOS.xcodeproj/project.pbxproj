@@ -58,6 +58,9 @@
 		D4E5B865279A27290062F20B /* task_Champion_iOS */ = {
 			isa = PBXGroup;
 			children = (
+				D4E5B87F279A27EC0062F20B /* controller */,
+				D4E5B87E279A27E80062F20B /* view */,
+				D4E5B87D279A27E10062F20B /* model */,
 				D4E5B866279A272A0062F20B /* AppDelegate.swift */,
 				D4E5B868279A272A0062F20B /* SceneDelegate.swift */,
 				D4E5B86A279A272A0062F20B /* ViewController.swift */,
@@ -68,6 +71,27 @@
 				D4E5B86F279A272A0062F20B /* task_Champion_iOS.xcdatamodeld */,
 			);
 			path = task_Champion_iOS;
+			sourceTree = "<group>";
+		};
+		D4E5B87D279A27E10062F20B /* model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = model;
+			sourceTree = "<group>";
+		};
+		D4E5B87E279A27E80062F20B /* view */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = view;
+			sourceTree = "<group>";
+		};
+		D4E5B87F279A27EC0062F20B /* controller */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = controller;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
