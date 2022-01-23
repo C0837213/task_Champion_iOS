@@ -21,6 +21,7 @@ class HomeScreenVC: UIViewController {
     private var categories = [Category]()
     private var currentCategory: Category? = nil
     private var selectedIndex: Int = 0
+    private var currentTask: Item? = nil
     
     private let categoryCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -196,6 +197,10 @@ extension HomeScreenVC {
         currentCategory = categories[0]
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let subTaskVc = segue.destination as! SubTaskVC
+        subTaskVc.currentTask = currentTask
+    }
 }
 
 // MARK: - UICollectionViewDelegateFlowLayout & UICollectionViewDataSource
@@ -257,7 +262,12 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
             print("delete")
         }
     }
-    
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        currentTask = self.categories[self.selectedIndex].items[indexPath.row]
+        performSegue(withIdentifier: "reviewTaskDetails", sender: self)
+    }
+
 }
 
 // MARK: - UISearchBarDelegate
