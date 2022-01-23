@@ -73,6 +73,7 @@ class HomeScreenVC: UIViewController {
             
         NotificationCenter.default.addObserver(self, selector: #selector(HomeScreenVC.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         loadCategories()
+        insertData()
         configureNavigationBar()
         configureCollectionView()
         configureTableView()
@@ -202,6 +203,7 @@ extension HomeScreenVC {
     
     // MARK: - Dummy Test Data
     private func insertData() {
+        if(categories.count == 0) {
         let categories1 = Category(context: context)
         categories1.name = "Business"
         self.categories.append(categories1)
@@ -237,6 +239,7 @@ extension HomeScreenVC {
         
         self.saveData()
         self.loadCategories()
+        }
     }
     
 }
@@ -270,7 +273,6 @@ extension HomeScreenVC: UICollectionViewDelegateFlowLayout, UICollectionViewData
         self.loadItems()
         selectedIndex = indexPath.row
         self.tasksTableView.reloadData()
-        
     }
     
     
@@ -292,8 +294,8 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         guard let cell = tableView.dequeueReusableCell(withIdentifier: TaskCell.identifier, for: indexPath) as? TaskCell else { return UITableViewCell() }
-
-        cell.setData(title: items[indexPath.row].name ?? "", isCompleted: nil)
+         let title = items[indexPath.row].name ?? ""
+        cell.setData(title: title, isCompleted: nil)
 
         return cell
     }
@@ -312,10 +314,9 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
         let request:NSFetchRequest<Category> = Category.fetchRequest()
         do {
             self.categories = try context.fetch(request)
-            if(self.categories.count == 0) {
-                insertData()
-            }else{
+            if (categories.count>0) {
                 self.currentCategory = categories[0]
+                self.loadItems()
             }
         } catch {
             print("Error load categories ... \(error.localizedDescription)")
