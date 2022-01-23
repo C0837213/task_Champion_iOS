@@ -63,6 +63,9 @@ class HomeScreenVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        NotificationCenter.default.addObserver(self, selector: #selector(HomeScreenVC.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+            
+        NotificationCenter.default.addObserver(self, selector: #selector(HomeScreenVC.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         dummyTestData()
         configureNavigationBar()
         configureCollectionView()
@@ -170,6 +173,19 @@ extension HomeScreenVC {
         navigationItem.rightBarButtonItem = rightBarButton
         self.title = "Welcome!"
         self.navigationController?.navigationBar.prefersLargeTitles = true
+    }
+
+        
+    @objc private func keyboardWillShow(notification: NSNotification) {
+        guard let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else {
+            return
+        }
+            
+        self.view.frame.origin.y = 0 - keyboardSize.height
+    }
+        
+    @objc private func keyboardWillHide(notification: NSNotification) {
+        self.view.frame.origin.y = 0
     }
     
     // MARK: - Dummy Test Data
