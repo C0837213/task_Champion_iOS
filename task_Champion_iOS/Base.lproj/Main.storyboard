@@ -15,62 +15,8 @@
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="TbF-73-GI0">
-                                <rect key="frame" x="40" y="127" width="334" height="32"/>
-                                <segments>
-                                    <segment title="Sort by Date"/>
-                                    <segment title="Sort by Task (A - Z)"/>
-                                </segments>
-                            </segmentedControl>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Task Manager" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zx0-3x-SmQ">
-                                <rect key="frame" x="0.0" y="88" width="414" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="m0f-Mv-yn6">
-                                <rect key="frame" x="0.0" y="395" width="414" height="51"/>
-                                <textInputTraits key="textInputTraits"/>
-                            </searchBar>
-                            <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XUe-yr-zgv">
-                                <rect key="frame" x="0.0" y="174" width="414" height="216"/>
-                            </pickerView>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="zFa-F7-dcy">
-                                <rect key="frame" x="0.0" y="461" width="414" height="435"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="WQB-x8-iU0">
-                                        <rect key="frame" x="0.0" y="44.5" width="414" height="43.5"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="WQB-x8-iU0" id="ad2-3y-Rgj">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
-                                </prototypes>
-                            </tableView>
-                        </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <constraints>
-                            <constraint firstItem="XUe-yr-zgv" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="2i7-rP-d5h"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="zFa-F7-dcy" secondAttribute="trailing" id="3nP-Rx-WB3"/>
-                            <constraint firstItem="m0f-Mv-yn6" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="43X-kJ-SsL"/>
-                            <constraint firstItem="zFa-F7-dcy" firstAttribute="top" secondItem="m0f-Mv-yn6" secondAttribute="bottom" constant="15" id="8mp-tO-yHs"/>
-                            <constraint firstItem="TbF-73-GI0" firstAttribute="top" secondItem="zx0-3x-SmQ" secondAttribute="bottom" constant="18" id="Ble-6a-baR"/>
-                            <constraint firstItem="XUe-yr-zgv" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="CNm-TT-0pY"/>
-                            <constraint firstItem="m0f-Mv-yn6" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="Dc9-Pa-69e"/>
-                            <constraint firstItem="zx0-3x-SmQ" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="DhP-od-aIe"/>
-                            <constraint firstItem="zFa-F7-dcy" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="LkC-ja-4I2"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="zx0-3x-SmQ" secondAttribute="trailing" id="Lzn-UX-joo"/>
-                            <constraint firstItem="XUe-yr-zgv" firstAttribute="top" secondItem="TbF-73-GI0" secondAttribute="bottom" constant="16" id="O4F-vk-CnX"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="TbF-73-GI0" secondAttribute="trailing" constant="40" id="apb-82-NMv"/>
-                            <constraint firstItem="TbF-73-GI0" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="40" id="bfT-CF-uN6"/>
-                            <constraint firstAttribute="bottom" secondItem="zFa-F7-dcy" secondAttribute="bottom" id="hyv-xv-7bU"/>
-                            <constraint firstItem="zx0-3x-SmQ" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="jbZ-IT-JhV"/>
-                            <constraint firstItem="m0f-Mv-yn6" firstAttribute="top" secondItem="XUe-yr-zgv" secondAttribute="bottom" constant="5" id="tzO-5R-7X7"/>
-                        </constraints>
+                        <color key="backgroundColor" red="0.91751664879999995" green="0.92561119790000002" blue="0.95227378610000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                     </view>
                     <navigationItem key="navigationItem" id="o1g-hY-3hQ"/>
                 </viewController>
