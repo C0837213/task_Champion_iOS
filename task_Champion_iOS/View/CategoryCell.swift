@@ -92,9 +92,9 @@ class CategoryCell: UICollectionViewCell {
         self.layer.masksToBounds = false
     }
     
-    public func setData(category: Category) {
-        self.taskLabel.text = String(category.items.count)
-        self.categoryLabel.text = category.name
+    public func setData(text:Int, name:String) {
+        self.taskLabel.text = String(text)
+        self.categoryLabel.text = name
     }
 }
 

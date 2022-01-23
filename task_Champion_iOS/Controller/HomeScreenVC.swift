@@ -6,21 +6,27 @@
 //
 
 import UIKit
+import CoreData
 
-struct Category {
-    var name: String
-    var items: [Item]
-}
-
-struct Item {
-    var name: String
-}
+//struct Category {
+//    var name: String
+//    var items: [Item]
+//}
+//
+//struct Item {
+//    var name: String
+//}
 
 class HomeScreenVC: UIViewController {
     
     private var categories = [Category]()
     private var currentCategory: Category? = nil
+    private var items = [Item]()
     private var selectedIndex: Int = 0
+    
+    //context
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    
     
     private let categoryCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -66,13 +72,16 @@ class HomeScreenVC: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(HomeScreenVC.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
             
         NotificationCenter.default.addObserver(self, selector: #selector(HomeScreenVC.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-        dummyTestData()
+        insertData()
         configureNavigationBar()
         configureCollectionView()
         configureTableView()
         configureSearchBar()
         configureAddTaskButton()
+        loadCategories()
     }
+    
+    
     
     // MARK: - Selectors
     @objc private func displayCategories() {
@@ -84,8 +93,8 @@ class HomeScreenVC: UIViewController {
         let alert = UIAlertController(title: "Add a new task", message: "Please enter the name of the task", preferredStyle: .alert)
         let addAction = UIAlertAction(title: "Add", style: .default) { action in
             
-            let newItem = Item(name: textField.text!)
-            self.categories[self.selectedIndex].items.append(newItem)
+//            let newItem = Item(name: textField.text!)
+//            self.categories[self.selectedIndex].items.append(newItem)
             
             DispatchQueue.main.async {
                 self.tasksTableView.reloadData()
@@ -189,11 +198,18 @@ extension HomeScreenVC {
     }
     
     // MARK: - Dummy Test Data
-    private func dummyTestData() {
-        categories.append(Category(name: "Business", items: [Item(name: "Testing"), Item(name: "Bsa")]))
-        categories.append(Category(name: "Home", items: [Item(name: "Cleaning"), Item(name: "Cooking"), Item(name: "Shopping")]))
-        
-        currentCategory = categories[0]
+    private func insertData() {
+        let categories1 = Category(context: self.context)
+        categories1.name = "Business"
+        self.categories.append(categories1)
+        let categories2 = Category(context: self.context)
+        categories2.name = "Home"
+        self.categories.append(categories2)
+        self.saveCategories()
+//        categories.append(Category(name: "Business", items: [Item(name: "Testing"), Item(name: "Bsa")]))
+//        categories.append(Category(name: "Home", items: [Item(name: "Cleaning"), Item(name: "Cooking"), Item(name: "Shopping")]))
+//
+//        currentCategory = categories[0]
     }
     
 }
@@ -213,7 +229,10 @@ extension HomeScreenVC: UICollectionViewDelegateFlowLayout, UICollectionViewData
         
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CategoryCell.identifier, for: indexPath) as? CategoryCell else { return UICollectionViewCell() }
         
-        cell.setData(category: categories[indexPath.row])
+        let text = categories[indexPath.row].items?.count ?? 0
+        let name = categories[indexPath.row].name ?? ""
+        
+        cell.setData(text:text, name: name)
         
         return cell
     }
@@ -228,6 +247,8 @@ extension HomeScreenVC: UICollectionViewDelegateFlowLayout, UICollectionViewData
     
 }
 
+
+
 // MARK: - UITableViewDelegate & UITableViewDataSource
 extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
     
@@ -236,15 +257,15 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categories[selectedIndex].items.count
+        return categories[selectedIndex].items?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
+
         guard let cell = tableView.dequeueReusableCell(withIdentifier: TaskCell.identifier, for: indexPath) as? TaskCell else { return UITableViewCell() }
-        
-        cell.setData(title: categories[selectedIndex].items[indexPath.row].name, isCompleted: nil)
-        
+
+        cell.setData(title: items[indexPath.row].name ?? "", isCompleted: nil)
+
         return cell
     }
     
@@ -257,7 +278,36 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
             print("delete")
         }
     }
+    //MARK: - CoreDate Methods
+    private func loadCategories() {
+        let request:NSFetchRequest<Category> = Category.fetchRequest()
+        do {
+            self.categories = try context.fetch(request)
+            self.currentCategory = categories[0]
+        } catch {
+            print("Error load categories ... \(error.localizedDescription)")
+        }
+    }
     
+    private func saveCategories () {
+        do {
+            try context.save()
+        }catch {
+            print("Error saving categories.. \(error.localizedDescription)")
+        }
+    }
+    
+    private func loadItems () {
+        let request:NSFetchRequest<Item> = Item.fetchRequest()
+        let itemPredicate = NSPredicate(format: "catFolder.name=%@", currentCategory!.name!)
+        request.predicate = itemPredicate
+        request.sortDescriptors=[NSSortDescriptor(key:"name",ascending: true)]
+        do {
+            self.items = try context.fetch(request)
+        } catch {
+            print("Error load items ... \(error.localizedDescription)")
+        }
+    }
 }
 
 // MARK: - UISearchBarDelegate
@@ -270,3 +320,6 @@ extension UIColor {
     static let crystalWhite = UIColor(red: 233/255, green: 236/255, blue: 244/255, alpha: 1)
     static let lightCharcoal = UIColor(red: 36/255, green: 44/255, blue: 75/255, alpha: 1)
 }
+
+
+
