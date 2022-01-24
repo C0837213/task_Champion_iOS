@@ -187,7 +187,7 @@ extension HomeScreenVC {
             return
         }
             
-        self.view.frame.origin.y = 0 - keyboardSize.height
+        self.view.frame.origin.y = 100 - keyboardSize.height
     }
         
     @objc private func keyboardWillHide(notification: NSNotification) {
