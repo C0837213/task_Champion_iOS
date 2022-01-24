@@ -48,6 +48,7 @@
 		BA40E6A6279B8B5700927133 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				D4E5B86F279A272A0062F20B /* task_Champion_iOS.xcdatamodeld */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -55,6 +56,8 @@
 		BA40E6A7279B8B5C00927133 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				D4E5B874279A272C0062F20B /* LaunchScreen.storyboard */,
+				D4E5B86C279A272A0062F20B /* Main.storyboard */,
 				BA406F7C279CC98E0032C20E /* CategoryCell.swift */,
 				BA406F7E279CC9AB0032C20E /* TaskCell.swift */,
 			);
@@ -89,16 +92,13 @@
 		D4E5B865279A27290062F20B /* task_Champion_iOS */ = {
 			isa = PBXGroup;
 			children = (
+				D4E5B866279A272A0062F20B /* AppDelegate.swift */,
+				D4E5B868279A272A0062F20B /* SceneDelegate.swift */,
 				BA40E6A6279B8B5700927133 /* Model */,
 				BA40E6A7279B8B5C00927133 /* View */,
 				BA40E6A8279B8B6300927133 /* Controller */,
-				D4E5B866279A272A0062F20B /* AppDelegate.swift */,
-				D4E5B868279A272A0062F20B /* SceneDelegate.swift */,
-				D4E5B86C279A272A0062F20B /* Main.storyboard */,
 				D4E5B872279A272C0062F20B /* Assets.xcassets */,
-				D4E5B874279A272C0062F20B /* LaunchScreen.storyboard */,
 				D4E5B877279A272C0062F20B /* Info.plist */,
-				D4E5B86F279A272A0062F20B /* task_Champion_iOS.xcdatamodeld */,
 			);
 			path = task_Champion_iOS;
 			sourceTree = "<group>";
