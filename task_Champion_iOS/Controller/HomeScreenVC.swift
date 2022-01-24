@@ -6,22 +6,19 @@
 //
 
 import UIKit
-
-struct Category {
-    var name: String
-    var items: [Item]
-}
-
-struct Item {
-    var name: String
-}
+import CoreData
 
 class HomeScreenVC: UIViewController {
     
     private var categories = [Category]()
     private var currentCategory: Category? = nil
+    private var items = [Item]()
     private var selectedIndex: Int = 0
     private var currentTask: Item? = nil
+    
+    //context
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    
     
     private let categoryCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -67,7 +64,8 @@ class HomeScreenVC: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(HomeScreenVC.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
             
         NotificationCenter.default.addObserver(self, selector: #selector(HomeScreenVC.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-        dummyTestData()
+        loadCategories()
+        insertData()
         configureNavigationBar()
         configureCollectionView()
         configureTableView()
@@ -75,18 +73,24 @@ class HomeScreenVC: UIViewController {
         configureAddTaskButton()
     }
     
+    
+    
     // MARK: - Selectors
     @objc private func displayCategories() {
         
     }
     
-    @objc private func addNewTask() {
+    @objc private func addNewItem() {
         var textField = UITextField()
         let alert = UIAlertController(title: "Add a new task", message: "Please enter the name of the task", preferredStyle: .alert)
         let addAction = UIAlertAction(title: "Add", style: .default) { action in
             
-            let newItem = Item(name: textField.text!)
-            self.categories[self.selectedIndex].items.append(newItem)
+            let newItem = Item(context: self.context)
+            newItem.name = textField.text!
+            newItem.catFolder = self.currentCategory!
+            self.items.append(newItem)
+            self.saveData()
+
             
             DispatchQueue.main.async {
                 self.tasksTableView.reloadData()
@@ -156,7 +160,7 @@ extension HomeScreenVC {
     
     private func configureAddTaskButton() {
         view.addSubview(addTaskButton)
-        addTaskButton.addTarget(self, action: #selector(addNewTask), for: .touchUpInside)
+        addTaskButton.addTarget(self, action: #selector(addNewItem), for: .touchUpInside)
         
         NSLayoutConstraint.activate([
             addTaskButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
@@ -190,16 +194,51 @@ extension HomeScreenVC {
     }
     
     // MARK: - Dummy Test Data
-    private func dummyTestData() {
-        categories.append(Category(name: "Business", items: [Item(name: "Testing"), Item(name: "Bsa")]))
-        categories.append(Category(name: "Home", items: [Item(name: "Cleaning"), Item(name: "Cooking"), Item(name: "Shopping")]))
+    private func insertData() {
+        if(categories.count == 0) {
+        let categories1 = Category(context: context)
+        categories1.name = "Business"
+        self.categories.append(categories1)
         
-        currentCategory = categories[0]
+        let newItem1 = Item(context: context)
+        newItem1.name = "Testing"
+        newItem1.catFolder = categories1
+        self.items.append(newItem1)
+        
+        let newItem2 = Item(context: context)
+        newItem2.name = "Bsa"
+        newItem2.catFolder = categories1
+        self.items.append(newItem2)
+        
+        let categories2 = Category(context: context)
+        categories2.name = "Home"
+        self.categories.append(categories2)
+        
+        let newItem3 = Item(context: context)
+        newItem3.name = "Cleaning"
+        newItem3.catFolder = categories2
+        self.items.append(newItem3)
+        
+        let newItem4 = Item(context: context)
+        newItem4.name = "Cooking"
+        newItem4.catFolder = categories2
+        self.items.append(newItem4)
+        
+        let newItem5 = Item(context: context)
+        newItem5.name = "Shopping"
+        newItem5.catFolder = categories2
+        self.items.append(newItem5)
+        
+        self.saveData()
+        self.loadCategories()
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let subTaskVc = segue.destination as! SubTaskVC
-        subTaskVc.currentTask = currentTask
+        subTaskVc.currentTask = self.currentTask
+        subTaskVc.categoryIndex = self.selectedIndex
+        subTaskVc.categories = self.categories
     }
 }
 
@@ -218,20 +257,26 @@ extension HomeScreenVC: UICollectionViewDelegateFlowLayout, UICollectionViewData
         
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CategoryCell.identifier, for: indexPath) as? CategoryCell else { return UICollectionViewCell() }
         
-        cell.setData(category: categories[indexPath.row])
+        
+        let text = categories[indexPath.row].items?.count ?? 0
+        let name = categories[indexPath.row].name ?? ""
+        
+        cell.setData(text:text, name: name)
         
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        currentCategory = categories[indexPath.row]
+        self.currentCategory = categories[indexPath.row]
+        self.loadItems()
         selectedIndex = indexPath.row
         self.tasksTableView.reloadData()
-        
     }
     
     
 }
+
+
 
 // MARK: - UITableViewDelegate & UITableViewDataSource
 extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
@@ -241,15 +286,15 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categories[selectedIndex].items.count
+        return categories[selectedIndex].items?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
+
         guard let cell = tableView.dequeueReusableCell(withIdentifier: TaskCell.identifier, for: indexPath) as? TaskCell else { return UITableViewCell() }
-        
-        cell.setData(title: categories[selectedIndex].items[indexPath.row].name, isCompleted: nil)
-        
+         let title = items[indexPath.row].name ?? ""
+        cell.setData(title: title, isCompleted: nil)
+
         return cell
     }
     
@@ -264,10 +309,43 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        currentTask = self.categories[self.selectedIndex].items[indexPath.row]
+        currentTask = self.items[indexPath.row]
         performSegue(withIdentifier: "reviewTaskDetails", sender: self)
     }
 
+    //MARK: - CoreDate Methods
+    private func loadCategories() {
+        let request:NSFetchRequest<Category> = Category.fetchRequest()
+        do {
+            self.categories = try context.fetch(request)
+            if (categories.count>0) {
+                self.currentCategory = categories[0]
+                self.loadItems()
+            }
+        } catch {
+            print("Error load categories ... \(error.localizedDescription)")
+        }
+    }
+    
+    private func saveData () {
+        do {
+            try context.save()
+        }catch {
+            print("Error saving categories.. \(error.localizedDescription)")
+        }
+    }
+    
+    private func loadItems () {
+        let request:NSFetchRequest<Item> = Item.fetchRequest()
+        let itemPredicate = NSPredicate(format: "catFolder.name=%@", currentCategory!.name!)
+        request.predicate = itemPredicate
+        request.sortDescriptors=[NSSortDescriptor(key:"name",ascending: true)]
+        do {
+            self.items = try context.fetch(request)
+        } catch {
+            print("Error load items ... \(error.localizedDescription)")
+        }
+    }
 }
 
 // MARK: - UISearchBarDelegate
@@ -280,3 +358,6 @@ extension UIColor {
     static let crystalWhite = UIColor(red: 233/255, green: 236/255, blue: 244/255, alpha: 1)
     static let lightCharcoal = UIColor(red: 36/255, green: 44/255, blue: 75/255, alpha: 1)
 }
+
+
+
