@@ -359,5 +359,10 @@ extension UIColor {
     static let lightCharcoal = UIColor(red: 36/255, green: 44/255, blue: 75/255, alpha: 1)
 }
 
+extension Item {
+    override public func awakeFromInsert() {
+        setPrimitiveValue(Date(), forKey: "createdAt")
+    }
+}
 
 
