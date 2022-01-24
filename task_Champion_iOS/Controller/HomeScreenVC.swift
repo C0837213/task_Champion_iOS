@@ -103,6 +103,7 @@ class HomeScreenVC: UIViewController {
             DispatchQueue.main.async {
                 self.tasksTableView.reloadData()
                 self.categoryCollectionView.reloadData()
+                self.categoryCollectionView.selectItem(at: IndexPath(row: self.selectedIndex, section: 0), animated: true, scrollPosition: .centeredHorizontally)
             }
             
         }
