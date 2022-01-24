@@ -336,10 +336,17 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
-    private func loadItems () {
+    private func loadItems(with predicate: NSPredicate? = nil) {
         let request:NSFetchRequest<Item> = Item.fetchRequest()
         let itemPredicate = NSPredicate(format: "catFolder.name=%@", currentCategory!.name!)
-        request.predicate = itemPredicate
+        
+        if let predicate = predicate {
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, itemPredicate])
+        }
+        else {
+            request.predicate = itemPredicate
+        }
+        
         request.sortDescriptors=[NSSortDescriptor(key:"name",ascending: true)]
         do {
             self.items = try context.fetch(request)
