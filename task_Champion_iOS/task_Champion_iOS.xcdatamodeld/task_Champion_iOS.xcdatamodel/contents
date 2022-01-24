@@ -11,7 +11,8 @@
     </entity>
     <entity name="Item" representedClassName="Item" syncable="YES" codeGenerationType="class">
         <attribute name="audio" optional="YES" attributeType="String"/>
-        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" defaultDateTimeInterval="664706100" usesScalarValueType="NO"/>
+        <attribute name="detail" optional="YES" attributeType="String"/>
         <attribute name="isCompleted" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="photo" optional="YES" attributeType="String"/>
@@ -20,6 +21,6 @@
     </entity>
     <elements>
         <element name="Category" positionX="-63" positionY="-18" width="128" height="73"/>
-        <element name="Item" positionX="144.6905517578125" positionY="111.7245483398438" width="128" height="134"/>
+        <element name="Item" positionX="144.6905517578125" positionY="111.7245483398438" width="128" height="163"/>
     </elements>
 </model>

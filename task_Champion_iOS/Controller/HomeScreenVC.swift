@@ -8,21 +8,13 @@
 import UIKit
 import CoreData
 
-//struct Category {
-//    var name: String
-//    var items: [Item]
-//}
-//
-//struct Item {
-//    var name: String
-//}
-
 class HomeScreenVC: UIViewController {
     
     private var categories = [Category]()
     private var currentCategory: Category? = nil
     private var items = [Item]()
     private var selectedIndex: Int = 0
+    private var currentTask: Item? = nil
     
     //context
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
@@ -243,6 +235,12 @@ extension HomeScreenVC {
         }
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let subTaskVc = segue.destination as! SubTaskVC
+        subTaskVc.currentTask = self.currentTask
+        subTaskVc.categoryIndex = self.selectedIndex
+        subTaskVc.categories = self.categories
+    }
 }
 
 // MARK: - UICollectionViewDelegateFlowLayout & UICollectionViewDataSource
@@ -310,6 +308,12 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
             print("delete")
         }
     }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        currentTask = self.items[indexPath.row]
+        performSegue(withIdentifier: "reviewTaskDetails", sender: self)
+    }
+
     //MARK: - CoreDate Methods
     private func loadCategories() {
         let request:NSFetchRequest<Category> = Category.fetchRequest()
@@ -356,5 +360,10 @@ extension UIColor {
     static let lightCharcoal = UIColor(red: 36/255, green: 44/255, blue: 75/255, alpha: 1)
 }
 
+extension Item {
+    override public func awakeFromInsert() {
+        setPrimitiveValue(Date(), forKey: "createdAt")
+    }
+}
 
 
