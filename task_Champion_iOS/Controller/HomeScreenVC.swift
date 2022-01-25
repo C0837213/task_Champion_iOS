@@ -385,6 +385,8 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
             saveData()
             items.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
+            self.categoryCollectionView.reloadData()
+            categoryCollectionView.selectItem(at: IndexPath(row: selectedIndex, section: 0), animated: true, scrollPosition: .centeredHorizontally)
         }
     }
 
