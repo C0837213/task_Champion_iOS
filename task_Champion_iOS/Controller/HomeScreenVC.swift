@@ -176,6 +176,11 @@ class HomeScreenVC: UIViewController {
         self.view.frame.origin.y = 0
     }
     
+    public func updateViews() {
+        self.categoryCollectionView.reloadData()
+        self.tasksTableView.reloadData()
+    }
+    
 }
 
 // MARK: - UI Configuration Methods
@@ -310,6 +315,7 @@ extension HomeScreenVC {
         subTaskVc.currentTask = self.currentTask
         subTaskVc.categoryIndex = self.selectedIndex
         subTaskVc.categories = self.categories
+        subTaskVc.delegate = self
     }
 }
 

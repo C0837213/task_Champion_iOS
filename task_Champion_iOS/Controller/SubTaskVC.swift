@@ -8,7 +8,6 @@
 import UIKit
 
 class SubTaskVC: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
-    
 
     var currentTask: Item?
     var categories = [Category]()
@@ -23,6 +22,8 @@ class SubTaskVC: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource 
     
     //context
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    public weak var delegate: HomeScreenVC?
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,6 +36,12 @@ class SubTaskVC: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource 
         categoryPV.dataSource = self
         categoryPV.delegate = self
         categoryPV.selectRow(categoryIndex!, inComponent: 0, animated: true)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        delegate?.updateViews()
     }
     
     
