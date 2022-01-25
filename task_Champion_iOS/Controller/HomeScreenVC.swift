@@ -90,13 +90,14 @@ class HomeScreenVC: UIViewController {
             newItem.catFolder = self.currentCategory!
             self.items.append(newItem)
             self.saveData()
-
             
             DispatchQueue.main.async {
                 self.tasksTableView.reloadData()
                 self.categoryCollectionView.reloadData()
                 self.categoryCollectionView.selectItem(at: IndexPath(row: self.selectedIndex, section: 0), animated: true, scrollPosition: .centeredHorizontally)
             }
+            
+            self.loadItems()
             
         }
         
@@ -344,7 +345,7 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
         let itemPredicate = NSPredicate(format: "catFolder.name=%@", currentCategory!.name!)
         
         if let predicate = predicate {
-            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, itemPredicate])
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [itemPredicate, predicate])
         }
         else {
             request.predicate = itemPredicate
@@ -356,11 +357,21 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
         } catch {
             print("Error load items ... \(error.localizedDescription)")
         }
+        
     }
 }
 
 // MARK: - UISearchBarDelegate
 extension HomeScreenVC: UISearchBarDelegate {
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        let predicate = NSPredicate(format: "title CONTAINS %@", searchBar.text!)
+        self.tasksTableView.reloadData()
+        loadItems(with: predicate)
+    }
+    
+    
     
 }
 
