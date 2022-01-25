@@ -59,6 +59,38 @@ class HomeScreenVC: UIViewController {
         
         return button
     }()
+    
+    private let stackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .horizontal
+        stackView.distribution = .fillEqually
+        stackView.spacing = 10
+        
+        return stackView
+    }()
+    
+    private let sortByTaskButton: UIButton = {
+        let button = UIButton(frame: .zero)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Sort by Task (A - Z)", for: .normal)
+        button.backgroundColor = .systemCyan
+        button.layer.cornerRadius = 10
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        
+        return button
+    }()
+    
+    private let sortByDateButton: UIButton = {
+        let button = UIButton(frame: .zero)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Sort by Date", for: .normal)
+        button.backgroundColor = .systemCyan
+        button.layer.cornerRadius = 10
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        
+        return button
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -70,6 +102,7 @@ class HomeScreenVC: UIViewController {
         configureNavigationBar()
         configureCollectionView()
         configureSearchBar()
+        configureStackView()
         configureTableView()
         configureAddTaskButton()
     }
@@ -115,6 +148,18 @@ class HomeScreenVC: UIViewController {
         self.present(alert, animated: true, completion: nil)
     }
     
+    @objc private func keyboardWillShow(notification: NSNotification) {
+        guard let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else {
+            return
+        }
+            
+        self.view.frame.origin.y = 100 - keyboardSize.height
+    }
+        
+    @objc private func keyboardWillHide(notification: NSNotification) {
+        self.view.frame.origin.y = 0
+    }
+    
 }
 
 // MARK: - UI Configuration Methods
@@ -144,7 +189,7 @@ extension HomeScreenVC {
         view.addSubview(tasksTableView)
         
         NSLayoutConstraint.activate([
-            tasksTableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 10),
+            tasksTableView.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 10),
             tasksTableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10),
             tasksTableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10),
             tasksTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
@@ -188,18 +233,20 @@ extension HomeScreenVC {
         self.navigationController?.navigationBar.prefersLargeTitles = true
     }
 
+    private func configureStackView() {
+        view.addSubview(stackView)
         
-    @objc private func keyboardWillShow(notification: NSNotification) {
-        guard let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else {
-            return
-        }
-            
-        self.view.frame.origin.y = 100 - keyboardSize.height
-    }
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 10),
+            stackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            stackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            stackView.heightAnchor.constraint(equalToConstant: 40)
+        ])
         
-    @objc private func keyboardWillHide(notification: NSNotification) {
-        self.view.frame.origin.y = 0
+        stackView.addArrangedSubview(sortByTaskButton)
+        stackView.addArrangedSubview(sortByDateButton)
     }
+    
     
     // MARK: - Dummy Test Data
     private func insertData() {
