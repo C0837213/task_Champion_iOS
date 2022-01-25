@@ -77,6 +77,7 @@ class HomeScreenVC: UIViewController {
         button.backgroundColor = .systemCyan
         button.layer.cornerRadius = 10
         button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        button.addTarget(self, action: #selector(sortByTask), for: .touchUpInside)
         
         return button
     }()
@@ -88,6 +89,7 @@ class HomeScreenVC: UIViewController {
         button.backgroundColor = .systemCyan
         button.layer.cornerRadius = 10
         button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        button.addTarget(self, action: #selector(sortByDate), for: .touchUpInside)
         
         return button
     }()
@@ -146,6 +148,20 @@ class HomeScreenVC: UIViewController {
         }
         
         self.present(alert, animated: true, completion: nil)
+    }
+    
+    @objc private func sortByTask() {
+        let sortDescriptor = NSSortDescriptor(key: "name", ascending: true)
+        loadItems(with: nil, by: [sortDescriptor])
+        
+        self.tasksTableView.reloadData()
+    }
+    
+    @objc private func sortByDate() {
+        let sortDescriptor = NSSortDescriptor(key: "createdAt", ascending: false)
+        loadItems(with: nil, by: [sortDescriptor])
+        
+        self.tasksTableView.reloadData()
     }
     
     @objc private func keyboardWillShow(notification: NSNotification) {
