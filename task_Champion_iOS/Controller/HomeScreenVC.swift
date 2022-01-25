@@ -44,6 +44,7 @@ class HomeScreenVC: UIViewController {
     
     private let searchBar: UISearchBar = {
         let searchBar = UISearchBar(frame: .zero)
+        searchBar.translatesAutoresizingMaskIntoConstraints = false
         
         return searchBar
     }()
@@ -68,8 +69,8 @@ class HomeScreenVC: UIViewController {
         insertData()
         configureNavigationBar()
         configureCollectionView()
-        configureTableView()
         configureSearchBar()
+        configureTableView()
         configureAddTaskButton()
     }
     
@@ -143,7 +144,7 @@ extension HomeScreenVC {
         view.addSubview(tasksTableView)
         
         NSLayoutConstraint.activate([
-            tasksTableView.topAnchor.constraint(equalTo: categoryCollectionView.bottomAnchor, constant: 10),
+            tasksTableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 10),
             tasksTableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10),
             tasksTableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10),
             tasksTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
@@ -152,12 +153,17 @@ extension HomeScreenVC {
     }
     
     private func configureSearchBar() {
+        view.addSubview(searchBar)
         searchBar.delegate = self
-        searchBar.showsScopeBar = true
-        searchBar.scopeButtonTitles = ["Sort by Task (A-Z)", "Sort by Date"]
         searchBar.layer.cornerRadius = 20
         searchBar.backgroundColor = .crystalWhite
-        self.tasksTableView.tableHeaderView = searchBar
+                
+        NSLayoutConstraint.activate([
+            searchBar.topAnchor.constraint(equalTo: categoryCollectionView.bottomAnchor, constant: 10),
+            searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            searchBar.heightAnchor.constraint(equalToConstant: 50)
+        ])
     }
     
     private func configureAddTaskButton() {
@@ -340,7 +346,7 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
-    private func loadItems(with predicate: NSPredicate? = nil) {
+    private func loadItems(with predicate: NSPredicate? = nil, by sort: [NSSortDescriptor]? = nil) {
         let request:NSFetchRequest<Item> = Item.fetchRequest()
         let itemPredicate = NSPredicate(format: "catFolder.name=%@", currentCategory!.name!)
         
@@ -351,7 +357,8 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
             request.predicate = itemPredicate
         }
         
-        request.sortDescriptors=[NSSortDescriptor(key:"name",ascending: true)]
+        request.sortDescriptors = sort
+        
         do {
             self.items = try context.fetch(request)
         } catch {
@@ -363,14 +370,6 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
 
 // MARK: - UISearchBarDelegate
 extension HomeScreenVC: UISearchBarDelegate {
-    
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        
-        let predicate = NSPredicate(format: "title CONTAINS %@", searchBar.text!)
-        self.tasksTableView.reloadData()
-        loadItems(with: predicate)
-    }
-    
     
     
 }
