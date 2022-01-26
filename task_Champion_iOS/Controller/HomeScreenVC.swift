@@ -100,7 +100,6 @@ class HomeScreenVC: UIViewController {
             
         NotificationCenter.default.addObserver(self, selector: #selector(HomeScreenVC.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         loadCategories()
-        //insertData()
         configureNavigationBar()
         configureCollectionView()
         configureSearchBar()
@@ -109,9 +108,15 @@ class HomeScreenVC: UIViewController {
         configureAddTaskButton()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        self.categoryCollectionView.selectItem(at: IndexPath(row: 0, section: 0), animated: true, scrollPosition: .centeredHorizontally)
+    }
+    
     // MARK: - Selectors
     @objc private func displayCategories() {
-        
+        performSegue(withIdentifier: "goToCategories", sender: self)
     }
     
     @objc private func addNewItem() {
@@ -173,6 +178,10 @@ class HomeScreenVC: UIViewController {
         
     @objc private func keyboardWillHide(notification: NSNotification) {
         self.view.frame.origin.y = 0
+    }
+    
+    public func updateCategories(categories: [Category]) {
+        self.categories = categories
     }
     
     public func updateViews() {
@@ -309,11 +318,21 @@ extension HomeScreenVC {
         }
     }
     
+    // MARK: - Segue Method
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let subTaskVc = segue.destination as! SubTaskVC
-        subTaskVc.currentTask = self.currentTask
-        subTaskVc.categoryIndex = self.selectedIndex
-        subTaskVc.categories = self.categories
+
+        if let subTaskVc = segue.destination as? SubTaskVC {
+            subTaskVc.currentTask = self.currentTask
+            subTaskVc.categoryIndex = self.selectedIndex
+            subTaskVc.categories = self.categories
+        }
+        
+        if let categoryTVC = segue.destination as? CategoryTVC {
+            categoryTVC.delegate = self
+            categoryTVC.categories = self.categories
+        }
+        
+
     }
 }
 

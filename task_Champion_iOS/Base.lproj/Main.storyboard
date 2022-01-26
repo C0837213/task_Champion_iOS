@@ -21,6 +21,7 @@
                     <navigationItem key="navigationItem" id="o1g-hY-3hQ"/>
                     <connections>
                         <segue destination="VG8-sb-Ecr" kind="show" identifier="reviewTaskDetails" id="Bh0-7k-YFb"/>
+                        <segue destination="ld9-VQ-dA4" kind="show" identifier="goToCategories" id="lq5-TW-Bfp"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -43,20 +44,34 @@
             </objects>
             <point key="canvasLocation" x="1669.5652173913045" y="83.705357142857139"/>
         </scene>
-        <!--Category-->
-        <scene sceneID="i4e-n4-6HQ">
+        <!--CategoryTVC-->
+        <scene sceneID="vTp-nM-cgw">
             <objects>
-                <viewController title="Category" id="rLE-eo-o8n" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="ymK-Du-kdg">
+                <tableViewController id="ld9-VQ-dA4" customClass="CategoryTVC" customModule="task_Champion_iOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" id="FoH-X4-KmY">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <viewLayoutGuide key="safeArea" id="6E1-1d-Z5a"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="ZZ4-3p-MnK" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="cell" id="lW6-0m-3AY">
+                                <rect key="frame" x="0.0" y="44.5" width="414" height="43.5"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="lW6-0m-3AY" id="l8a-oW-MMX">
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="ld9-VQ-dA4" id="Hdp-yv-8Rw"/>
+                            <outlet property="delegate" destination="ld9-VQ-dA4" id="UXx-Sa-zUq"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" id="Qh5-MA-djv"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="wqY-On-w2A" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2313" y="84"/>
+            <point key="canvasLocation" x="2384" y="84"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="aua-fD-r0N">
