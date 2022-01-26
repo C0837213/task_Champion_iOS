@@ -9,13 +9,10 @@ import UIKit
 
 class SubTaskVC: UIViewController {
     
-    private let detailsLable: UILabel = {
-        let detailsLable = UILabel()
-        detailsLable.translatesAutoresizingMaskIntoConstraints = false
-        detailsLable.text = "Task Name :"
-        
-        return detailsLable
-    }()
+    private let detailsLabel = TaskLabel(title: "Task name: ")
+    private let categoriesLabel = TaskLabel(title: "Category: ")
+    private let imagesLabel = TaskLabel(title: "Task images: ")
+    private let audiosLabel = TaskLabel(title: "Task audios: ")
 
     private let taskTextField: UITextField = {
         let textField = UITextField(frame: .zero)
@@ -26,7 +23,6 @@ class SubTaskVC: UIViewController {
         textField.layer.cornerRadius = 10
         textField.textColor = .white
         textField.textAlignment = .center
-        textField.text = "Shopping"
         textField.font = UIFont.boldSystemFont(ofSize: 16)
         
         return textField
@@ -42,13 +38,6 @@ class SubTaskVC: UIViewController {
         return stackView
     }()
     
-    private let categoriesLable: UILabel = {
-        let detailsLable = UILabel()
-        detailsLable.translatesAutoresizingMaskIntoConstraints = false
-        detailsLable.text = "Category :"
-        
-        return detailsLable
-    }()
     
     private let categoryMenu: UIPickerView = {
         let pickerView = UIPickerView(frame: .zero)
@@ -61,6 +50,7 @@ class SubTaskVC: UIViewController {
         let textView = UITextView(frame: .zero)
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.layer.cornerRadius = 10
+        textView.text = textView.text.isEmpty ? "Enter your task details here..." : textView.text
         
         return textView
     }()
@@ -91,10 +81,9 @@ class SubTaskVC: UIViewController {
     private let importAudioButton = ImportButton(image: "mic.circle")
     private let takePhotoButton = ImportButton(image: "camera.circle")
     
-    private var editingMode: Bool = false
     var list = ["Business", "Home", "Car"]//audio demo data
-    var images = ["car.circle.fill", "mic.circle"]//photo demo data
     var selectedImages = [UIImage]()
+    
     var currentTask: Item?{
         didSet{
             taskTextField.text = currentTask?.name
@@ -103,23 +92,31 @@ class SubTaskVC: UIViewController {
     }
     var categories = [Category]()
     var categoryIndex: Int?
-    private var editMode: Bool = false
+    public weak var delegate: HomeScreenVC?
+    private var isAudioPlaying: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .crystalWhite
         
-        title = "Shopping"
-        navigationItem.rightBarButtonItem = editButtonItem
+        title = "Display Date here"
         configureButtons()
-        configureDetailsLable()
+        configureDetailsLabel()
         configureTaskTextField()
-        configureCategoriesLable()//this is not work
+        configureCategoriesLabel()
         configureCategoryMenu()
         configureTextView()
+        configureImagesLabel()
         configureCollectionView()
+        configureAudiosLabel()
         configureTableView()
         configureStackView()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        delegate?.updateViews()
     }
     
     @objc private func importPhotoFromLibrary() {
@@ -134,13 +131,43 @@ class SubTaskVC: UIViewController {
         
     }
     
-    private func configureDetailsLable(){
-        view.addSubview(detailsLable)
+    private func configureDetailsLabel(){
+        view.addSubview(detailsLabel)
+        
         NSLayoutConstraint.activate([
-            detailsLable.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10),
-            detailsLable.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -300),
-            detailsLable.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 30),
-            detailsLable.heightAnchor.constraint(equalToConstant: 35)
+            detailsLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            detailsLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 30),
+            detailsLabel.heightAnchor.constraint(equalToConstant: 35)
+        ])
+    }
+    
+    private func configureCategoriesLabel() {
+        view.addSubview(categoriesLabel)
+        
+        NSLayoutConstraint.activate([
+            categoriesLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            categoriesLabel.topAnchor.constraint(equalTo: taskTextField.bottomAnchor, constant: 10),
+            categoriesLabel.heightAnchor.constraint(equalToConstant: 50)
+        ])
+    }
+    
+    private func configureImagesLabel() {
+        view.addSubview(imagesLabel)
+        
+        NSLayoutConstraint.activate([
+            imagesLabel.topAnchor.constraint(equalTo: detailsTextView.bottomAnchor, constant: 20),
+            imagesLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            imagesLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
+        ])
+    }
+    
+    private func configureAudiosLabel() {
+        view.addSubview(audiosLabel)
+        
+        NSLayoutConstraint.activate([
+            audiosLabel.topAnchor.constraint(equalTo: imageCollectionView.bottomAnchor, constant: 15),
+            audiosLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            audiosLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
         ])
     }
         
@@ -150,18 +177,8 @@ class SubTaskVC: UIViewController {
         NSLayoutConstraint.activate([
             taskTextField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 30),
             taskTextField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
-            taskTextField.leadingAnchor.constraint(equalTo: detailsLable.trailingAnchor, constant: 0),
+            taskTextField.leadingAnchor.constraint(equalTo: detailsLabel.trailingAnchor, constant: 10),
             taskTextField.heightAnchor.constraint(equalToConstant: 35)
-        ])
-    }
-    
-    private func configureCategoriesLable(){
-        view.addSubview(categoriesLable)
-        NSLayoutConstraint.activate([
-            detailsLable.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10),
-            detailsLable.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -200),
-            detailsLable.topAnchor.constraint(equalTo: detailsLable.bottomAnchor, constant: 10),
-            detailsLable.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
     
@@ -172,8 +189,8 @@ class SubTaskVC: UIViewController {
         
         NSLayoutConstraint.activate([
             categoryMenu.topAnchor.constraint(equalTo: taskTextField.bottomAnchor, constant: 10),
-            categoryMenu.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -60),
-            categoryMenu.leadingAnchor.constraint(equalTo: categoriesLable.trailingAnchor, constant: 60),
+            categoryMenu.widthAnchor.constraint(equalTo: taskTextField.widthAnchor),
+            categoryMenu.leadingAnchor.constraint(equalTo: categoriesLabel.trailingAnchor, constant: 10),
             categoryMenu.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
@@ -197,10 +214,10 @@ class SubTaskVC: UIViewController {
         view.addSubview(imageCollectionView)
         
         NSLayoutConstraint.activate([
-            imageCollectionView.topAnchor.constraint(equalTo: detailsTextView.bottomAnchor, constant: 5),
+            imageCollectionView.topAnchor.constraint(equalTo: imagesLabel.bottomAnchor, constant: 5),
             imageCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 30),
             imageCollectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -30),
-            imageCollectionView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.25)
+            imageCollectionView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.20)
         ])
     }
     
@@ -211,7 +228,7 @@ class SubTaskVC: UIViewController {
         view.addSubview(audioTableView)
         
         NSLayoutConstraint.activate([
-            audioTableView.topAnchor.constraint(equalTo: imageCollectionView.bottomAnchor, constant: 20),
+            audioTableView.topAnchor.constraint(equalTo: audiosLabel.bottomAnchor, constant: 20),
             audioTableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 30),
             audioTableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -30),
         ])
@@ -249,12 +266,11 @@ extension SubTaskVC: UIPickerViewDelegate, UIPickerViewDataSource {
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return categories.count
+        return list.count
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        self.view.endEditing(true)
-        return categories[row].name
+        return list[row]
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
@@ -319,6 +335,32 @@ extension SubTaskVC: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        let playAction = UIContextualAction(style: .normal, title: isAudioPlaying ? "Stop" : "Play") { action, view, completion in
+            
+            self.isAudioPlaying = !self.isAudioPlaying
+            // Playing audio / Stop audio
+            completion(true)
+            
+            self.audioTableView.reloadData()
+            
+        }
+        
+        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { action, view, completion in
+            
+            // Deleting current audio
+            
+            completion(true)
+        }
+        
+        playAction.backgroundColor = isAudioPlaying ? .systemOrange : .systemGreen
+        
+        let configuration = UISwipeActionsConfiguration(actions: [deleteAction, playAction])
+        
+        return configuration
+        
+    }
     
 }
 
