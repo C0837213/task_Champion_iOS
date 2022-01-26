@@ -395,7 +395,46 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
         performSegue(withIdentifier: "reviewTaskDetails", sender: self)
     }
 
-    //MARK: - CoreDate Methods
+}
+
+// MARK: - UISearchBarDelegate
+extension HomeScreenVC: UISearchBarDelegate {
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        loadItems(with: nil, by: nil)
+        self.tasksTableView.reloadData()
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchNotes(with: searchBar.text!)
+        self.tasksTableView.reloadData()
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        searchNotes(with: searchText)
+        if searchBar.text?.count == 0 {
+            loadItems(with: nil, by: nil)
+            
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+            
+            self.tasksTableView.reloadData()
+        }
+    }
+    
+    private func searchNotes(with text: String) {
+        let predicate = NSPredicate(format: "name CONTAINS[cd] %@", text)
+        loadItems(with: predicate, by: nil)
+        
+        self.categoryCollectionView.selectItem(at: IndexPath(row: selectedIndex, section: 0), animated: true, scrollPosition: .centeredHorizontally)
+    }
+    
+}
+
+// MARK: - Core Data Methods
+extension HomeScreenVC {
+    
     private func loadCategories() {
         let request:NSFetchRequest<Category> = Category.fetchRequest()
         do {
@@ -438,42 +477,6 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
         
     }
 }
-
-// MARK: - UISearchBarDelegate
-extension HomeScreenVC: UISearchBarDelegate {
-    
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        loadItems(with: nil, by: nil)
-        self.tasksTableView.reloadData()
-    }
-    
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        searchNotes(with: searchBar.text!)
-        self.tasksTableView.reloadData()
-    }
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        searchNotes(with: searchText)
-        if searchBar.text?.count == 0 {
-            loadItems(with: nil, by: nil)
-            
-            DispatchQueue.main.async {
-                searchBar.resignFirstResponder()
-            }
-            
-            self.tasksTableView.reloadData()
-        }
-    }
-    
-    private func searchNotes(with text: String) {
-        let predicate = NSPredicate(format: "name CONTAINS[cd] %@", text)
-        loadItems(with: predicate, by: nil)
-        
-        self.categoryCollectionView.selectItem(at: IndexPath(row: selectedIndex, section: 0), animated: true, scrollPosition: .centeredHorizontally)
-    }
-    
-}
-
 
 extension UIColor {
     static let crystalWhite = UIColor(red: 233/255, green: 236/255, blue: 244/255, alpha: 1)
