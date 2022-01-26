@@ -86,8 +86,10 @@ class SubTaskVC: UIViewController {
     private let importAudioFileButton = ImportButton(image: "speaker.circle")
     
     var recordingSession: AVAudioSession!
+    
     var recorder: AVAudioRecorder!
     var player =  AVAudioPlayer ()
+
     
     var list = ["Business", "Home", "Car"]//audio demo data
     var selectedImages = [UIImage]()
@@ -122,6 +124,8 @@ class SubTaskVC: UIViewController {
         configureAudiosLabel()
         configureTableView()
         configureStackView()
+        
+        recordingSession = AVAudioSession.sharedInstance()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
