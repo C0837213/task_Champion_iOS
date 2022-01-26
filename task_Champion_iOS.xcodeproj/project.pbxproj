@@ -10,6 +10,7 @@
 		BA406F7D279CC98E0032C20E /* CategoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA406F7C279CC98E0032C20E /* CategoryCell.swift */; };
 		BA406F7F279CC9AB0032C20E /* TaskCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA406F7E279CC9AB0032C20E /* TaskCell.swift */; };
 		BA40E6AA279B8B7600927133 /* HomeScreenVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA40E6A9279B8B7600927133 /* HomeScreenVC.swift */; };
+		BA9F7E6627A0E07400B5F4E8 /* CategoryTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA9F7E6527A0E07400B5F4E8 /* CategoryTVC.swift */; };
 		D4D28E94279D2E2E003B9C34 /* SubTaskVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D28E93279D2E2E003B9C34 /* SubTaskVC.swift */; };
 		D4E5B867279A272A0062F20B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E5B866279A272A0062F20B /* AppDelegate.swift */; };
 		D4E5B869279A272A0062F20B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E5B868279A272A0062F20B /* SceneDelegate.swift */; };
@@ -23,6 +24,7 @@
 		BA406F7C279CC98E0032C20E /* CategoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryCell.swift; sourceTree = "<group>"; };
 		BA406F7E279CC9AB0032C20E /* TaskCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskCell.swift; sourceTree = "<group>"; };
 		BA40E6A9279B8B7600927133 /* HomeScreenVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreenVC.swift; sourceTree = "<group>"; };
+		BA9F7E6527A0E07400B5F4E8 /* CategoryTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryTVC.swift; sourceTree = "<group>"; };
 		D4D28E93279D2E2E003B9C34 /* SubTaskVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SubTaskVC.swift; path = task_Champion_iOS/controller/SubTaskVC.swift; sourceTree = SOURCE_ROOT; };
 		D4E5B863279A27290062F20B /* task_Champion_iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = task_Champion_iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4E5B866279A272A0062F20B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -69,6 +71,7 @@
 			children = (
 				BA40E6A9279B8B7600927133 /* HomeScreenVC.swift */,
 				D4D28E93279D2E2E003B9C34 /* SubTaskVC.swift */,
+				BA9F7E6527A0E07400B5F4E8 /* CategoryTVC.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -181,6 +184,7 @@
 				BA40E6AA279B8B7600927133 /* HomeScreenVC.swift in Sources */,
 				D4E5B869279A272A0062F20B /* SceneDelegate.swift in Sources */,
 				BA406F7D279CC98E0032C20E /* CategoryCell.swift in Sources */,
+				BA9F7E6627A0E07400B5F4E8 /* CategoryTVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
