@@ -44,6 +44,7 @@ class HomeScreenVC: UIViewController {
     
     private let searchBar: UISearchBar = {
         let searchBar = UISearchBar(frame: .zero)
+        searchBar.translatesAutoresizingMaskIntoConstraints = false
         
         return searchBar
     }()
@@ -58,6 +59,40 @@ class HomeScreenVC: UIViewController {
         
         return button
     }()
+    
+    private let stackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .horizontal
+        stackView.distribution = .fillEqually
+        stackView.spacing = 10
+        
+        return stackView
+    }()
+    
+    private let sortByTaskButton: UIButton = {
+        let button = UIButton(frame: .zero)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Sort by Task (A - Z)", for: .normal)
+        button.backgroundColor = .systemCyan
+        button.layer.cornerRadius = 10
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        button.addTarget(self, action: #selector(sortByTask), for: .touchUpInside)
+        
+        return button
+    }()
+    
+    private let sortByDateButton: UIButton = {
+        let button = UIButton(frame: .zero)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Sort by Date", for: .normal)
+        button.backgroundColor = .systemCyan
+        button.layer.cornerRadius = 10
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        button.addTarget(self, action: #selector(sortByDate), for: .touchUpInside)
+        
+        return button
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -68,8 +103,9 @@ class HomeScreenVC: UIViewController {
         insertData()
         configureNavigationBar()
         configureCollectionView()
-        configureTableView()
         configureSearchBar()
+        configureStackView()
+        configureTableView()
         configureAddTaskButton()
     }
     
@@ -90,12 +126,14 @@ class HomeScreenVC: UIViewController {
             newItem.catFolder = self.currentCategory!
             self.items.append(newItem)
             self.saveData()
-
             
             DispatchQueue.main.async {
                 self.tasksTableView.reloadData()
                 self.categoryCollectionView.reloadData()
+                self.categoryCollectionView.selectItem(at: IndexPath(row: self.selectedIndex, section: 0), animated: true, scrollPosition: .centeredHorizontally)
             }
+            
+            self.loadItems()
             
         }
         
@@ -110,6 +148,37 @@ class HomeScreenVC: UIViewController {
         }
         
         self.present(alert, animated: true, completion: nil)
+    }
+    
+    @objc private func sortByTask() {
+        let sortDescriptor = NSSortDescriptor(key: "name", ascending: true)
+        loadItems(with: nil, by: [sortDescriptor])
+        
+        self.tasksTableView.reloadData()
+    }
+    
+    @objc private func sortByDate() {
+        let sortDescriptor = NSSortDescriptor(key: "createdAt", ascending: false)
+        loadItems(with: nil, by: [sortDescriptor])
+        
+        self.tasksTableView.reloadData()
+    }
+    
+    @objc private func keyboardWillShow(notification: NSNotification) {
+        guard let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else {
+            return
+        }
+            
+        self.view.frame.origin.y = 100 - keyboardSize.height
+    }
+        
+    @objc private func keyboardWillHide(notification: NSNotification) {
+        self.view.frame.origin.y = 0
+    }
+    
+    public func updateViews() {
+        self.categoryCollectionView.reloadData()
+        self.tasksTableView.reloadData()
     }
     
 }
@@ -141,7 +210,7 @@ extension HomeScreenVC {
         view.addSubview(tasksTableView)
         
         NSLayoutConstraint.activate([
-            tasksTableView.topAnchor.constraint(equalTo: categoryCollectionView.bottomAnchor, constant: 10),
+            tasksTableView.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 10),
             tasksTableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10),
             tasksTableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10),
             tasksTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
@@ -150,12 +219,17 @@ extension HomeScreenVC {
     }
     
     private func configureSearchBar() {
+        view.addSubview(searchBar)
         searchBar.delegate = self
-        searchBar.showsScopeBar = true
-        searchBar.scopeButtonTitles = ["Sort by Task (A-Z)", "Sort by Date"]
         searchBar.layer.cornerRadius = 20
         searchBar.backgroundColor = .crystalWhite
-        self.tasksTableView.tableHeaderView = searchBar
+                
+        NSLayoutConstraint.activate([
+            searchBar.topAnchor.constraint(equalTo: categoryCollectionView.bottomAnchor, constant: 10),
+            searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            searchBar.heightAnchor.constraint(equalToConstant: 50)
+        ])
     }
     
     private func configureAddTaskButton() {
@@ -180,18 +254,20 @@ extension HomeScreenVC {
         self.navigationController?.navigationBar.prefersLargeTitles = true
     }
 
+    private func configureStackView() {
+        view.addSubview(stackView)
         
-    @objc private func keyboardWillShow(notification: NSNotification) {
-        guard let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else {
-            return
-        }
-            
-        self.view.frame.origin.y = 0 - keyboardSize.height
-    }
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 10),
+            stackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            stackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            stackView.heightAnchor.constraint(equalToConstant: 40)
+        ])
         
-    @objc private func keyboardWillHide(notification: NSNotification) {
-        self.view.frame.origin.y = 0
+        stackView.addArrangedSubview(sortByTaskButton)
+        stackView.addArrangedSubview(sortByDateButton)
     }
+    
     
     // MARK: - Dummy Test Data
     private func insertData() {
@@ -239,6 +315,7 @@ extension HomeScreenVC {
         subTaskVc.currentTask = self.currentTask
         subTaskVc.categoryIndex = self.selectedIndex
         subTaskVc.categories = self.categories
+        subTaskVc.delegate = self
     }
 }
 
@@ -304,7 +381,12 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            print("delete")
+            context.delete(items[indexPath.row])
+            saveData()
+            items.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .fade)
+            self.categoryCollectionView.reloadData()
+            categoryCollectionView.selectItem(at: IndexPath(row: selectedIndex, section: 0), animated: true, scrollPosition: .centeredHorizontally)
         }
     }
 
@@ -335,21 +417,31 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
-    private func loadItems () {
+    private func loadItems(with predicate: NSPredicate? = nil, by sort: [NSSortDescriptor]? = nil) {
         let request:NSFetchRequest<Item> = Item.fetchRequest()
         let itemPredicate = NSPredicate(format: "catFolder.name=%@", currentCategory!.name!)
-        request.predicate = itemPredicate
-        request.sortDescriptors=[NSSortDescriptor(key:"name",ascending: true)]
+        
+        if let predicate = predicate {
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [itemPredicate, predicate])
+        }
+        else {
+            request.predicate = itemPredicate
+        }
+        
+        request.sortDescriptors = sort
+        
         do {
             self.items = try context.fetch(request)
         } catch {
             print("Error load items ... \(error.localizedDescription)")
         }
+        
     }
 }
 
 // MARK: - UISearchBarDelegate
 extension HomeScreenVC: UISearchBarDelegate {
+    
     
 }
 
