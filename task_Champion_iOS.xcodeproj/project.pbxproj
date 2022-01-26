@@ -10,6 +10,7 @@
 		BA406F7D279CC98E0032C20E /* CategoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA406F7C279CC98E0032C20E /* CategoryCell.swift */; };
 		BA406F7F279CC9AB0032C20E /* TaskCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA406F7E279CC9AB0032C20E /* TaskCell.swift */; };
 		BA40E6AA279B8B7600927133 /* HomeScreenVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA40E6A9279B8B7600927133 /* HomeScreenVC.swift */; };
+		BA4EDB1D27A1F01000683565 /* TaskLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA4EDB1C27A1F01000683565 /* TaskLabel.swift */; };
 		BA9F7E6627A0E07400B5F4E8 /* CategoryTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA9F7E6527A0E07400B5F4E8 /* CategoryTVC.swift */; };
 		D4CA18D427A0CED100E20B0C /* ImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4CA18D327A0CED100E20B0C /* ImageCell.swift */; };
 		D4CA18D627A0CEFA00E20B0C /* ImportButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4CA18D527A0CEFA00E20B0C /* ImportButton.swift */; };
@@ -26,6 +27,7 @@
 		BA406F7C279CC98E0032C20E /* CategoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryCell.swift; sourceTree = "<group>"; };
 		BA406F7E279CC9AB0032C20E /* TaskCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskCell.swift; sourceTree = "<group>"; };
 		BA40E6A9279B8B7600927133 /* HomeScreenVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreenVC.swift; sourceTree = "<group>"; };
+		BA4EDB1C27A1F01000683565 /* TaskLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskLabel.swift; sourceTree = "<group>"; };
 		BA9F7E6527A0E07400B5F4E8 /* CategoryTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryTVC.swift; sourceTree = "<group>"; };
 		D4CA18D327A0CED100E20B0C /* ImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ImageCell.swift; path = task_Champion_iOS/view/ImageCell.swift; sourceTree = SOURCE_ROOT; };
 		D4CA18D527A0CEFA00E20B0C /* ImportButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ImportButton.swift; path = task_Champion_iOS/view/ImportButton.swift; sourceTree = SOURCE_ROOT; };
@@ -66,6 +68,7 @@
 				BA406F7E279CC9AB0032C20E /* TaskCell.swift */,
 				D4CA18D327A0CED100E20B0C /* ImageCell.swift */,
 				D4CA18D527A0CEFA00E20B0C /* ImportButton.swift */,
+				BA4EDB1C27A1F01000683565 /* TaskLabel.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -188,6 +191,7 @@
 				D4E5B871279A272A0062F20B /* task_Champion_iOS.xcdatamodeld in Sources */,
 				D4E5B867279A272A0062F20B /* AppDelegate.swift in Sources */,
 				BA40E6AA279B8B7600927133 /* HomeScreenVC.swift in Sources */,
+				BA4EDB1D27A1F01000683565 /* TaskLabel.swift in Sources */,
 				D4CA18D427A0CED100E20B0C /* ImageCell.swift in Sources */,
 				D4CA18D627A0CEFA00E20B0C /* ImportButton.swift in Sources */,
 				D4E5B869279A272A0062F20B /* SceneDelegate.swift in Sources */,
