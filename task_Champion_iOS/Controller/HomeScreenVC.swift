@@ -100,7 +100,7 @@ class HomeScreenVC: UIViewController {
             
         NotificationCenter.default.addObserver(self, selector: #selector(HomeScreenVC.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         loadCategories()
-        insertData()
+        //insertData()
         configureNavigationBar()
         configureCollectionView()
         configureSearchBar()
@@ -108,8 +108,6 @@ class HomeScreenVC: UIViewController {
         configureTableView()
         configureAddTaskButton()
     }
-    
-    
     
     // MARK: - Selectors
     @objc private func displayCategories() {
@@ -123,6 +121,7 @@ class HomeScreenVC: UIViewController {
             
             let newItem = Item(context: self.context)
             newItem.name = textField.text!
+            newItem.isCompleted = false
             newItem.catFolder = self.currentCategory!
             self.items.append(newItem)
             self.saveData()
@@ -363,14 +362,14 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categories[selectedIndex].items?.count ?? 0
+        return items.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         guard let cell = tableView.dequeueReusableCell(withIdentifier: TaskCell.identifier, for: indexPath) as? TaskCell else { return UITableViewCell() }
-         let title = items[indexPath.row].name ?? ""
-        cell.setData(title: title, isCompleted: nil)
+        let title = items[indexPath.row].name ?? ""
+        cell.setData(title: title, isCompleted: items[indexPath.row].isCompleted)
 
         return cell
     }
@@ -394,8 +393,69 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
         currentTask = self.items[indexPath.row]
         performSegue(withIdentifier: "reviewTaskDetails", sender: self)
     }
+    
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        let completeAction = UIContextualAction(style: .normal, title: "Mark") { action, view, completion in
+            
+            completion(true)
+            self.items[indexPath.row].isCompleted = !self.items[indexPath.row].isCompleted
+            
+            self.saveData()
+            self.loadItems(with: nil, by: nil)
+            
+            DispatchQueue.main.async {
+                self.tasksTableView.reloadData()
+            }
+        }
+        
+        completeAction.backgroundColor = .systemGreen
+        let configuration = UISwipeActionsConfiguration(actions: [completeAction])
+        
+        return configuration
+        
+    }
 
-    //MARK: - CoreDate Methods
+}
+
+// MARK: - UISearchBarDelegate
+extension HomeScreenVC: UISearchBarDelegate {
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        loadItems(with: nil, by: nil)
+        self.tasksTableView.reloadData()
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchNotes(with: searchBar.text!)
+        self.tasksTableView.reloadData()
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        searchNotes(with: searchText)
+        if searchBar.text?.count == 0 {
+            loadItems(with: nil, by: nil)
+            
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+            
+            self.tasksTableView.reloadData()
+        }
+    }
+    
+    private func searchNotes(with text: String) {
+        let predicate = NSPredicate(format: "name CONTAINS[cd] %@", text)
+        loadItems(with: predicate, by: nil)
+        
+        self.categoryCollectionView.selectItem(at: IndexPath(row: selectedIndex, section: 0), animated: true, scrollPosition: .centeredHorizontally)
+    }
+    
+}
+
+// MARK: - Core Data Methods
+extension HomeScreenVC {
+    
     private func loadCategories() {
         let request:NSFetchRequest<Category> = Category.fetchRequest()
         do {
@@ -438,13 +498,6 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
         
     }
 }
-
-// MARK: - UISearchBarDelegate
-extension HomeScreenVC: UISearchBarDelegate {
-    
-    
-}
-
 
 extension UIColor {
     static let crystalWhite = UIColor(red: 233/255, green: 236/255, blue: 244/255, alpha: 1)

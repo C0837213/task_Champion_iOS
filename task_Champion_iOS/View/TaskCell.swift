@@ -10,6 +10,7 @@ import UIKit
 class TaskCell: UITableViewCell {
     
     public static let identifier = "TaskCell"
+    public weak var delegate: HomeScreenVC?
     
     private let taskLabel: UILabel = {
         let label = UILabel(frame: .zero)
@@ -22,7 +23,6 @@ class TaskCell: UITableViewCell {
     private let completionView: UIView = {
         let view = UIView(frame: .zero)
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .systemRed
         view.layer.cornerRadius = 12.5
         
         return view
@@ -54,8 +54,13 @@ class TaskCell: UITableViewCell {
         
     }
     
-    public func setData(title: String, isCompleted: Bool?) {
+    public func setData(title: String, isCompleted: Bool) {
         self.taskLabel.text = title
+        self.completionView.backgroundColor = isCompleted ? .systemGreen : .systemRed
+    }
+    
+    public func setCompleted(isCompleted: Bool) {
+        completionView.backgroundColor = isCompleted ? .systemGreen : .systemRed
     }
 
 }
