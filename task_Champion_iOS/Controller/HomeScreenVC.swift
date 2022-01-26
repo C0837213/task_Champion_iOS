@@ -109,8 +109,6 @@ class HomeScreenVC: UIViewController {
         configureAddTaskButton()
     }
     
-    
-    
     // MARK: - Selectors
     @objc private func displayCategories() {
         
@@ -123,6 +121,7 @@ class HomeScreenVC: UIViewController {
             
             let newItem = Item(context: self.context)
             newItem.name = textField.text!
+            newItem.isCompleted = false
             newItem.catFolder = self.currentCategory!
             self.items.append(newItem)
             self.saveData()
@@ -370,7 +369,7 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
 
         guard let cell = tableView.dequeueReusableCell(withIdentifier: TaskCell.identifier, for: indexPath) as? TaskCell else { return UITableViewCell() }
         let title = items[indexPath.row].name ?? ""
-        cell.setData(title: title, isCompleted: nil)
+        cell.setData(title: title, isCompleted: items[indexPath.row].isCompleted)
 
         return cell
     }
@@ -393,6 +392,28 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         currentTask = self.items[indexPath.row]
         performSegue(withIdentifier: "reviewTaskDetails", sender: self)
+    }
+    
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        let completeAction = UIContextualAction(style: .normal, title: "Mark") { action, view, completion in
+            
+            completion(true)
+            self.items[indexPath.row].isCompleted = !self.items[indexPath.row].isCompleted
+            
+            self.saveData()
+            self.loadItems(with: nil, by: nil)
+            
+            DispatchQueue.main.async {
+                self.tasksTableView.reloadData()
+            }
+        }
+        
+        completeAction.backgroundColor = .systemGreen
+        let configuration = UISwipeActionsConfiguration(actions: [completeAction])
+        
+        return configuration
+        
     }
 
 }
