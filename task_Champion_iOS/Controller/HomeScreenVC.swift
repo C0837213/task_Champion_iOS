@@ -100,7 +100,7 @@ class HomeScreenVC: UIViewController {
             
         NotificationCenter.default.addObserver(self, selector: #selector(HomeScreenVC.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         loadCategories()
-        insertData()
+        //insertData()
         configureNavigationBar()
         configureCollectionView()
         configureSearchBar()
@@ -363,13 +363,13 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categories[selectedIndex].items?.count ?? 0
+        return items.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         guard let cell = tableView.dequeueReusableCell(withIdentifier: TaskCell.identifier, for: indexPath) as? TaskCell else { return UITableViewCell() }
-         let title = items[indexPath.row].name ?? ""
+        let title = items[indexPath.row].name ?? ""
         cell.setData(title: title, isCompleted: nil)
 
         return cell
@@ -442,6 +442,35 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
 // MARK: - UISearchBarDelegate
 extension HomeScreenVC: UISearchBarDelegate {
     
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        loadItems(with: nil, by: nil)
+        self.tasksTableView.reloadData()
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchNotes(with: searchBar.text!)
+        self.tasksTableView.reloadData()
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        searchNotes(with: searchText)
+        if searchBar.text?.count == 0 {
+            loadItems(with: nil, by: nil)
+            
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+            
+            self.tasksTableView.reloadData()
+        }
+    }
+    
+    private func searchNotes(with text: String) {
+        let predicate = NSPredicate(format: "name CONTAINS[cd] %@", text)
+        loadItems(with: predicate, by: nil)
+        
+        self.categoryCollectionView.selectItem(at: IndexPath(row: selectedIndex, section: 0), animated: true, scrollPosition: .centeredHorizontally)
+    }
     
 }
 
