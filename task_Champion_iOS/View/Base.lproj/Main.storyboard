@@ -21,6 +21,7 @@
                     <navigationItem key="navigationItem" id="o1g-hY-3hQ"/>
                     <connections>
                         <segue destination="VG8-sb-Ecr" kind="show" identifier="reviewTaskDetails" id="Bh0-7k-YFb"/>
+                        <segue destination="h4B-cu-z3I" kind="show" identifier="goToCategories" id="D4G-GS-UC4"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -129,7 +130,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="dgh-BG-kYB">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="cell" id="dgh-BG-kYB">
                                 <rect key="frame" x="0.0" y="44.5" width="414" height="43.5"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="dgh-BG-kYB" id="koH-gP-5Hg">
@@ -143,6 +144,7 @@
                             <outlet property="delegate" destination="h4B-cu-z3I" id="Wi7-if-pp3"/>
                         </connections>
                     </tableView>
+                    <navigationItem key="navigationItem" id="jjI-lQ-mTJ"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NQv-ut-m9P" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
