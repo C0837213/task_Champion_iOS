@@ -16,6 +16,7 @@ class TaskCell: UITableViewCell {
         let label = UILabel(frame: .zero)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .lightCharcoal
+        label.adjustsFontSizeToFitWidth = true
         
         return label
     }()
