@@ -100,6 +100,7 @@ class HomeScreenVC: UIViewController {
             
         NotificationCenter.default.addObserver(self, selector: #selector(HomeScreenVC.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         loadCategories()
+        insertDefaultCategoriesData()
         configureNavigationBar()
         configureCollectionView()
         configureSearchBar()
@@ -277,44 +278,33 @@ extension HomeScreenVC {
     }
     
     
-    // MARK: - Dummy Test Data
-    private func insertData() {
-        if(categories.count == 0) {
-        let categories1 = Category(context: context)
-        categories1.name = "Business"
-        self.categories.append(categories1)
-        
-        let newItem1 = Item(context: context)
-        newItem1.name = "Testing"
-        newItem1.catFolder = categories1
-        self.items.append(newItem1)
-        
-        let newItem2 = Item(context: context)
-        newItem2.name = "Bsa"
-        newItem2.catFolder = categories1
-        self.items.append(newItem2)
-        
-        let categories2 = Category(context: context)
-        categories2.name = "Home"
-        self.categories.append(categories2)
-        
-        let newItem3 = Item(context: context)
-        newItem3.name = "Cleaning"
-        newItem3.catFolder = categories2
-        self.items.append(newItem3)
-        
-        let newItem4 = Item(context: context)
-        newItem4.name = "Cooking"
-        newItem4.catFolder = categories2
-        self.items.append(newItem4)
-        
-        let newItem5 = Item(context: context)
-        newItem5.name = "Shopping"
-        newItem5.catFolder = categories2
-        self.items.append(newItem5)
-        
-        self.saveData()
-        self.loadCategories()
+    // MARK: - Insert Default Category Data
+    private func insertDefaultCategoriesData() {
+        if categories.count == 0 {
+            
+            let categories1 = Category(context: context)
+            categories1.name = "Home"
+            self.categories.append(categories1)
+            
+            let categories2 = Category(context: context)
+            categories2.name = "Business"
+            self.categories.append(categories2)
+            
+            let categories3 = Category(context: context)
+            categories3.name = "School"
+            self.categories.append(categories3)
+            
+            let categories4 = Category(context: context)
+            categories4.name = "Social"
+            self.categories.append(categories4)
+            
+            let categories5 = Category(context: context)
+            categories5.name = "Self-development"
+            self.categories.append(categories5)
+            
+            self.saveData()
+            self.loadCategories()
+            
         }
     }
     
@@ -353,10 +343,10 @@ extension HomeScreenVC: UICollectionViewDelegateFlowLayout, UICollectionViewData
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CategoryCell.identifier, for: indexPath) as? CategoryCell else { return UICollectionViewCell() }
         
         
-        let text = categories[indexPath.row].items?.count ?? 0
+        let itemsCount = categories[indexPath.row].items?.count ?? 0
         let name = categories[indexPath.row].name ?? ""
         
-        cell.setData(text:text, name: name)
+        cell.setData(itemCounter: itemsCount, name: name, progress: Int(categories[indexPath.row].itemCounter))
         
         return cell
     }
@@ -420,11 +410,19 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
             completion(true)
             self.items[indexPath.row].isCompleted = !self.items[indexPath.row].isCompleted
             
+            if self.items[indexPath.row].isCompleted {
+                self.categories[self.selectedIndex].itemCounter += 1
+            } else {
+                self.categories[self.selectedIndex].itemCounter -= 1
+            }
+            
             self.saveData()
             self.loadItems(with: nil, by: nil)
             
             DispatchQueue.main.async {
                 self.tasksTableView.reloadData()
+                self.categoryCollectionView.reloadData()
+                self.categoryCollectionView.selectItem(at: IndexPath(row: self.selectedIndex, section: 0), animated: true, scrollPosition: .centeredHorizontally)
             }
         }
         
