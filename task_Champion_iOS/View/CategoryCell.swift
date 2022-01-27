@@ -46,13 +46,22 @@ class CategoryCell: UICollectionViewCell {
         return label
     }()
     
+    private let progressView: UIProgressView = {
+        let progressView = UIProgressView(frame: .zero)
+        progressView.translatesAutoresizingMaskIntoConstraints = false
+        progressView.trackTintColor = .lightCharcoal
+        progressView.progressTintColor = .systemCyan
+            
+        return progressView
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
         configureCellLayout()
         configureTaskLabel()
         configureCategoryLabel()
-        
+        configureProgressView()
     }
     
     required init?(coder: NSCoder) {
@@ -81,6 +90,16 @@ class CategoryCell: UICollectionViewCell {
         ])
     }
     
+    private func configureProgressView() {
+        contentView.addSubview(progressView)
+        
+        NSLayoutConstraint.activate([
+            progressView.topAnchor.constraint(equalTo: categoryLabel.bottomAnchor, constant: 20),
+            progressView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            progressView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+        ])
+    }
+    
     private func configureCellLayout() {
         self.backgroundColor = .white
         self.layer.cornerRadius = 20
@@ -92,9 +111,17 @@ class CategoryCell: UICollectionViewCell {
         self.layer.masksToBounds = false
     }
     
-    public func setData(text:Int, name:String) {
-        self.taskLabel.text = String(text)
+    public func setData(itemCounter: Int, name: String, progress: Int) {
+        self.taskLabel.text = String(itemCounter)
         self.categoryLabel.text = name
+        
+        if progress > 0 {
+            self.progressView.progress = Float(progress) / Float(itemCounter)
+        }
+        else {
+            self.progressView.progress = 0.0
+        }
+        
     }
 }
 
