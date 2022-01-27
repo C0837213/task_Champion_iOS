@@ -129,11 +129,8 @@ class SubTaskVC: UIViewController {
         configureAudiosLabel()
         configureTableView()
         configureStackView()
-<<<<<<< Updated upstream
-        
+
         recordingSession = AVAudioSession.sharedInstance()
-=======
->>>>>>> Stashed changes
         categoryMenu.selectRow(categoryIndex!, inComponent: 0, animated: true)
         setCurrentTask()
     }
@@ -548,7 +545,4 @@ extension SubTaskVC: AVAudioRecorderDelegate {
             }
         }
     }
-=======
-
->>>>>>> Stashed changes
 }
