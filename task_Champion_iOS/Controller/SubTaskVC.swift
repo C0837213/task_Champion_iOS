@@ -102,11 +102,9 @@ class SubTaskVC: UIViewController {
     var player =  AVAudioPlayer ()
 
     
-    var list = ["Business", "Home", "Car"]//audio demo data
+
     var selectedImages = [UIImage]()
-    private var audioFilePaths:[URL] = []
     private var audioFileName = ""
-    
     var currentTask: Item?
     var categories = [Category]()
     var categoryIndex: Int?
@@ -141,6 +139,7 @@ class SubTaskVC: UIViewController {
         currentTask?.detail = detailsTextView.text
         saveData()
         delegate?.updateViews()
+        isAudioPlaying = false
     }
     
     @objc private func importPhotoFromLibrary() {
@@ -331,14 +330,14 @@ extension SubTaskVC: UICollectionViewDelegateFlowLayout, UICollectionViewDataSou
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return selectedImages.count
+        return  0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ImageCell.identifier, for: indexPath) as? ImageCell else { return UICollectionViewCell() }
-        
-        cell.setData(image: selectedImages[indexPath.row])
+        //TODO:
+        cell.setData(image: UIImage(data: (currentTask?.photos![indexPath.row])!))
         
         return cell
     }
@@ -370,24 +369,29 @@ extension SubTaskVC: UICollectionViewDelegateFlowLayout, UICollectionViewDataSou
 //MARK: - Audio Table Delegate
 extension SubTaskVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return list.count
+        return currentTask!.audios?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "AudioCell", for: indexPath)
         
-        cell.textLabel?.text = list[indexPath.row]
+        cell.textLabel?.text = "Audio File "  + String(indexPath.row + 1)
         
         return cell
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        
         let playAction = UIContextualAction(style: .normal, title: isAudioPlaying ? "Stop" : "Play") { action, view, completion in
+                        
+            // Playing audio / Stop audio
+            if(self.isAudioPlaying == false) {
+                self.playSound((self.currentTask?.audios![indexPath.row])!)
+            } else {
+                self.player.stop()
+            }
             
             self.isAudioPlaying = !self.isAudioPlaying
-            // Playing audio / Stop audio
             completion(true)
             
             self.audioTableView.reloadData()
@@ -397,7 +401,9 @@ extension SubTaskVC: UITableViewDelegate, UITableViewDataSource {
         let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { action, view, completion in
             
             // Deleting current audio
+            self.currentTask?.audios?.remove(at: indexPath.row)
             
+            self.audioTableView.reloadData()
             completion(true)
         }
         
@@ -419,11 +425,39 @@ extension SubTaskVC: UIImagePickerControllerDelegate, UINavigationControllerDele
         
         if let image = info[.editedImage] as? UIImage {
             selectedImages.append(image)
+            if let data = image.pngData() {
+                self.currentTask?.photos?.append(data)
+                        self.saveData()
+            }
+//                data.write(toFile: localPath!, atomically: true)
+//                let photoURL = URL.init(fileURLWithPath: localPath!)
+//        if(self.currentTask?.photos == nil) {
+//            currentTask?.photos = []
+//        }
+
         }
         
         picker.dismiss(animated: true, completion: nil)
         imageCollectionView.reloadData()
         
+        
+        
+        // Get imgURL
+//        if let imgUrl = info[UIImagePickerController.InfoKey.imageURL] as? URL{
+//                let imgName = imgUrl.lastPathComponent
+//                let documentDirectory = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first
+//                let localPath = documentDirectory?.appending(imgName)
+
+//                let image = info[UIImagePickerController.InfoKey.originalImage] as! UIImage
+//                let data = image.pngData()!
+////                data.write(toFile: localPath!, atomically: true)
+////                let photoURL = URL.init(fileURLWithPath: localPath!)
+//            if(self.currentTask?.photos == nil) {
+//                currentTask?.photos = []
+//            }
+//        self.currentTask?.photos?.append(data)
+//                self.saveData()
+//            }
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
@@ -443,11 +477,13 @@ extension SubTaskVC: UIDocumentPickerDelegate {
             return
         }
         // TODO: - sync with core data
-        audioFilePaths.append(asset.url)
         print(asset.url, "documentPicker")
-        print(asset.url.path,"asset.url.path")
-        // TODO: - update the audio table view data
-//        self.playSound(asset.url)
+        if self.currentTask?.audios == nil {
+            self.currentTask?.audios = []
+        }
+        self.currentTask?.audios?.append(asset.url)
+        
+        self.audioTableView.reloadData()
     }
     
     private func importAudFile() {
@@ -458,16 +494,28 @@ extension SubTaskVC: UIDocumentPickerDelegate {
     }
 }
 
-//MARK: Recording Delegete
-extension SubTaskVC: AVAudioRecorderDelegate {
+extension SubTaskVC: AVAudioPlayerDelegate {
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        isAudioPlaying = false
+        self.audioTableView.reloadData()
+    }
     private func playSound (_ URL: URL) {
         do {
-            try player = AVAudioPlayer.init(contentsOf: URL)
+            let sound = try AVAudioPlayer.init(contentsOf: URL)
+            self.player = sound
+            sound.numberOfLoops = 0
+            sound.prepareToPlay()
+            sound.play()
+            
         }catch {
             print ("Error in play the sound file")
         }
-        player.play()
     }
+}
+
+//MARK: Recording Delegete
+extension SubTaskVC: AVAudioRecorderDelegate {
+
     private func getDocumentsDirectory() -> URL {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         let documentsDirectory = paths[0]
@@ -477,6 +525,7 @@ extension SubTaskVC: AVAudioRecorderDelegate {
     private func getRecordingURL(_ fileName : String) -> URL {
         return getDocumentsDirectory().appendingPathComponent(fileName)
     }
+    
     private func startRec() {
         audioFileName = "recording" + UUID().uuidString + ".m4a"
         let audioURL = getRecordingURL(audioFileName)
@@ -528,7 +577,6 @@ extension SubTaskVC: AVAudioRecorderDelegate {
                     ac.addAction(UIAlertAction(title: "OK", style: .default))
                     present(ac, animated: true)
         } else {
-            audioFilePaths.append(getRecordingURL(audioFileName))
             UIView.animateKeyframes(withDuration: 2, delay: 0, options: [], animations: {
                 
                 UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 1){
@@ -539,9 +587,11 @@ extension SubTaskVC: AVAudioRecorderDelegate {
                 }
             }, completion: nil)
             print("finishRecording")
-            for path in audioFilePaths {
-                print(path)
+            if self.currentTask?.audios == nil {
+                self.currentTask?.audios = []
             }
+            self.currentTask?.audios?.append(getRecordingURL(audioFileName))
+            self.audioTableView.reloadData()
         }
     }
 }
