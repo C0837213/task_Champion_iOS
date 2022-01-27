@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19574" systemVersion="21C52" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19574" systemVersion="21A559" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Category" representedClassName="Category" syncable="YES" codeGenerationType="class">
+        <attribute name="itemCounter" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <relationship name="items" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Item" inverseName="catFolder" inverseEntity="Item"/>
         <uniquenessConstraints>
@@ -19,7 +20,7 @@
         <relationship name="catFolder" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Category" inverseName="items" inverseEntity="Category"/>
     </entity>
     <elements>
-        <element name="Category" positionX="330.2066040039062" positionY="-58.17550659179688" width="128" height="73"/>
+        <element name="Category" positionX="330.2066040039062" positionY="-58.17550659179688" width="128" height="74"/>
         <element name="Item" positionX="277.5746459960938" positionY="78.84936523437506" width="128" height="134"/>
     </elements>
 </model>
