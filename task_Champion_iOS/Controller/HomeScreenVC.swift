@@ -325,6 +325,7 @@ extension HomeScreenVC {
             subTaskVc.currentTask = self.currentTask
             subTaskVc.categoryIndex = self.selectedIndex
             subTaskVc.categories = self.categories
+            subTaskVc.delegate = self
         }
         
         if let categoryTVC = segue.destination as? CategoryTVC {

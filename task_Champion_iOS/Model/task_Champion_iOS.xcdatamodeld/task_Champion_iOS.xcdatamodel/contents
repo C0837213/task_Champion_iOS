@@ -15,12 +15,11 @@
         <attribute name="detail" optional="YES" attributeType="String"/>
         <attribute name="isCompleted" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="name" optional="YES" attributeType="String"/>
-        <attribute name="photos" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[URL]"/>
-        <attribute name="upadtedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="photos" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[Data]"/>
         <relationship name="catFolder" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Category" inverseName="items" inverseEntity="Category"/>
     </entity>
     <elements>
-        <element name="Category" positionX="-63" positionY="-18" width="128" height="73"/>
-        <element name="Item" positionX="144.6905517578125" positionY="111.7245483398438" width="128" height="14"/>
+        <element name="Category" positionX="330.2066040039062" positionY="-58.17550659179688" width="128" height="73"/>
+        <element name="Item" positionX="277.5746459960938" positionY="78.84936523437506" width="128" height="134"/>
     </elements>
 </model>
