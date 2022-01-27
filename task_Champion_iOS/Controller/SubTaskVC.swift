@@ -12,6 +12,8 @@ import MobileCoreServices
 
 class SubTaskVC: UIViewController {
     
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    
     private let detailsLabel = TaskLabel(title: "Task name: ")
     private let categoriesLabel = TaskLabel(title: "Category: ")
     private let imagesLabel = TaskLabel(title: "Task images: ")
@@ -80,6 +82,15 @@ class SubTaskVC: UIViewController {
         return tableView
     }()
     
+    private func setCurrentTask() {
+        taskTextField.text = currentTask?.name
+        detailsTextView.text = currentTask?.detail
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        formatter.dateStyle = .short
+        title = "Created at: \(formatter.string(from: (currentTask?.createdAt ?? Date()))) "
+    }
+    
     private let importPhotoButton = ImportButton(image: "photo.circle.fill")
     private let takePhotoButton = ImportButton(image: "camera.circle")
     private let recordAudioButton = ImportButton(image: "mic.circle")
@@ -96,13 +107,7 @@ class SubTaskVC: UIViewController {
     private var audioFilePaths:[URL] = []
     private var audioFileName = ""
     
-    var currentTask: Item?{
-        didSet{
-            taskTextField.text = currentTask?.name
-            detailsTextView.text = currentTask?.detail
-        }
-    }
-    
+    var currentTask: Item?
     var categories = [Category]()
     var categoryIndex: Int?
     public weak var delegate: HomeScreenVC?
@@ -111,8 +116,8 @@ class SubTaskVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .crystalWhite
-        
-        title = "Display Date here"
+        navigationController?.navigationBar.largeTitleTextAttributes = [.font: UIFont.boldSystemFont(ofSize: 16)]
+
         configureButtons()
         configureDetailsLabel()
         configureTaskTextField()
@@ -124,13 +129,20 @@ class SubTaskVC: UIViewController {
         configureAudiosLabel()
         configureTableView()
         configureStackView()
+<<<<<<< Updated upstream
         
         recordingSession = AVAudioSession.sharedInstance()
+=======
+>>>>>>> Stashed changes
+        categoryMenu.selectRow(categoryIndex!, inComponent: 0, animated: true)
+        setCurrentTask()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
+        currentTask?.name = taskTextField.text
+        currentTask?.detail = detailsTextView.text
+        saveData()
         delegate?.updateViews()
     }
     
@@ -284,6 +296,13 @@ class SubTaskVC: UIViewController {
         
     }
     
+    private func saveData () {
+        do {
+            try context.save()
+        }catch {
+            print("Error saving categories.. \(error.localizedDescription)")
+        }
+    }
 
 }
 //MARK: Category Picker Delegate
@@ -294,11 +313,11 @@ extension SubTaskVC: UIPickerViewDelegate, UIPickerViewDataSource {
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return list.count
+        return categories.count
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return list[row]
+        return categories[row].name
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
@@ -413,6 +432,7 @@ extension SubTaskVC: UIImagePickerControllerDelegate, UINavigationControllerDele
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true, completion: nil)
     }
+<<<<<<< Updated upstream
 }
 
 
@@ -528,4 +548,7 @@ extension SubTaskVC: AVAudioRecorderDelegate {
             }
         }
     }
+=======
+
+>>>>>>> Stashed changes
 }

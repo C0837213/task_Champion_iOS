@@ -45,7 +45,7 @@ class CategoryTVC: UITableViewController {
                 return
             }
             
-            if text.count > 1 {
+            if text.count > 0 {
                 let newCategory = Category(context: self.context)
                 newCategory.name = text
                 self.categories.append(newCategory)
