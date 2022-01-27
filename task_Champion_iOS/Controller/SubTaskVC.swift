@@ -381,23 +381,20 @@ extension SubTaskVC: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     
-    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let playAction = UIContextualAction(style: .normal, title: isAudioPlaying ? "Stop" : "Play") { action, view, completion in
-                        
-            // Playing audio / Stop audio
-            if(self.isAudioPlaying == false) {
-                self.playSound((self.currentTask?.audios![indexPath.row])!)
-            } else {
-                self.player.stop()
-            }
-            
-            self.isAudioPlaying = !self.isAudioPlaying
-            completion(true)
-            
-            self.audioTableView.reloadData()
-            
-        }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if(self.isAudioPlaying == false) {
+           self.playSound((self.currentTask?.audios![indexPath.row])!)
+       } else {
+           self.player.stop()
+       }
+
+       self.isAudioPlaying = !self.isAudioPlaying
+
+       self.audioTableView.reloadData()
         
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { action, view, completion in
             
             // Deleting current audio
@@ -407,9 +404,8 @@ extension SubTaskVC: UITableViewDelegate, UITableViewDataSource {
             completion(true)
         }
         
-        playAction.backgroundColor = isAudioPlaying ? .systemOrange : .systemGreen
-        
-        let configuration = UISwipeActionsConfiguration(actions: [deleteAction, playAction])
+
+        let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
         
         return configuration
         
