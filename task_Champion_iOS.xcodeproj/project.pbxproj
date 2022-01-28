@@ -68,8 +68,6 @@
 		BA40E6A7279B8B5C00927133 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				D4E5B86C279A272A0062F20B /* Main.storyboard */,
-				D4E5B874279A272C0062F20B /* LaunchScreen.storyboard */,
 				BA406F7C279CC98E0032C20E /* CategoryCell.swift */,
 				BA406F7E279CC9AB0032C20E /* TaskCell.swift */,
 				D4CA18D327A0CED100E20B0C /* ImageCell.swift */,
@@ -125,6 +123,8 @@
 				D4E5B868279A272A0062F20B /* SceneDelegate.swift */,
 				D4E5B872279A272C0062F20B /* Assets.xcassets */,
 				D4E5B877279A272C0062F20B /* Info.plist */,
+				D4E5B86C279A272A0062F20B /* Main.storyboard */,
+				D4E5B874279A272C0062F20B /* LaunchScreen.storyboard */,
 			);
 			path = task_Champion_iOS;
 			sourceTree = "<group>";
