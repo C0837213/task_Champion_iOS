@@ -45,7 +45,22 @@ class CategoryTVC: UITableViewController {
                 return
             }
             
+            
             if text.count > 0 {
+                
+                for category in self.categories {
+                    if text.lowercased() == category.name?.lowercased() {
+                        
+                        let textAlert = UIAlertController(title: "Please enter a different category name", message: "Category already exists", preferredStyle: .alert)
+                        
+                        textAlert.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))
+                        
+                        self.present(textAlert, animated: true, completion: nil)
+                        
+                        return
+                    }
+                }
+                
                 let newCategory = Category(context: self.context)
                 newCategory.name = text
                 self.categories.append(newCategory)
