@@ -89,18 +89,12 @@ class SubTaskVC: UIViewController {
         formatter.timeStyle = .short
         formatter.dateStyle = .short
         title = "Created at: \(formatter.string(from: (currentTask?.createdAt ?? Date()))) "
-        let objects = currentTask!.photos!
-        if objects.count > 0 {
-            for object in objects {
-                do {
-                    let unarchivedObj = try NSKeyedUnarchiver.unarchivedObject(ofClass: NSData.self, from: object)! as Data
-                    photos.append(unarchivedObj)
-                } catch {
-                    print("Cannot unarchive the data \(error)")
-                }
-            }
+        if (currentTask?.photos != nil) {
+            photos = currentTask!.photos!
+        }else{
+            photos = []
         }
-        
+        imageCollectionView.reloadData()
     }
     
     private let importPhotoButton = ImportButton(image: "photo.circle.fill")
@@ -115,7 +109,7 @@ class SubTaskVC: UIViewController {
 
     
 
-    var selectedImages = [UIImage]()
+//    var selectedImages = [UIImage]()
     private var audioFileName = ""
     var currentTask: Item?
     var categories = [Category]()
@@ -355,9 +349,12 @@ extension SubTaskVC: UICollectionViewDelegateFlowLayout, UICollectionViewDataSou
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ImageCell.identifier, for: indexPath) as? ImageCell else { return UICollectionViewCell() }
-
-        
-        cell.setData(image: UIImage(data: (photos[indexPath.row]) as Data))
+        do {
+        let unarchivedObj = try NSKeyedUnarchiver.unarchivedObject(ofClass: NSData.self, from: photos[indexPath.row])! as Data
+            cell.setData(image: UIImage(data: (unarchivedObj) as Data))
+        }catch {
+            print("unarchive error \(error.localizedDescription)")
+        }
         
         return cell
     }
@@ -368,7 +365,9 @@ extension SubTaskVC: UICollectionViewDelegateFlowLayout, UICollectionViewDataSou
         
         let alert = UIAlertController(title: "Delete", message: "Do you want to delete current selected image?", preferredStyle: .alert)
         let deleteAction = UIAlertAction(title: "Delete", style: .destructive) { action in
-            self.selectedImages.remove(at: indexPath.row)
+            self.photos.remove(at: indexPath.row)
+            self.currentTask?.photos?.remove(at: indexPath.row)
+            self.saveData()
             self.imageCollectionView.reloadData()
         }
         
@@ -440,16 +439,12 @@ extension SubTaskVC: UIImagePickerControllerDelegate, UINavigationControllerDele
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
         if let image = info[.editedImage] as? UIImage {
-            selectedImages.append(image)
-
-            for img in selectedImages{
-                let data : NSData = NSData(data: img.pngData()!)
-                do {
-                    let coreDataObject = try NSKeyedArchiver.archivedData(withRootObject: data, requiringSecureCoding: true)
-                    photos.append(coreDataObject)
-                }catch{
-                    print("Can't archive data \(error)")
-                }
+            let data : NSData = NSData(data: image.pngData()!)
+            do {
+                let coreDataObject = try NSKeyedArchiver.archivedData(withRootObject: data, requiringSecureCoding: true)
+                photos.append(coreDataObject)
+            }catch{
+                print("Can't archive data \(error)")
             }
             self.currentTask?.photos = photos
             self.saveData()
