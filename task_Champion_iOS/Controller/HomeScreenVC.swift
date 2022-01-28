@@ -10,16 +10,14 @@ import CoreData
 
 class HomeScreenVC: UIViewController {
     
+    // MARK: - Properties
     private var categories = [Category]()
     private var currentCategory: Category? = nil
     private var items = [Item]()
     private var selectedIndex: Int = 0
     private var currentTask: Item? = nil
-    private var index: Int = 0
     
-    //context
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-    
     
     private let categoryCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -71,36 +69,14 @@ class HomeScreenVC: UIViewController {
         return stackView
     }()
     
-    private let sortByTaskButton: UIButton = {
-        let button = UIButton(frame: .zero)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Sort by Task (A - Z)", for: .normal)
-        button.backgroundColor = .systemCyan
-        button.layer.cornerRadius = 10
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
-        button.addTarget(self, action: #selector(sortByTask), for: .touchUpInside)
-        
-        return button
-    }()
-    
-    private let sortByDateButton: UIButton = {
-        let button = UIButton(frame: .zero)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Sort by Date", for: .normal)
-        button.backgroundColor = .systemCyan
-        button.layer.cornerRadius = 10
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
-        button.addTarget(self, action: #selector(sortByDate), for: .touchUpInside)
-        
-        return button
-    }()
+    private let sortByTaskButton = SortButton(title: "Sort by Task (A - Z)")
+    private let sortByDateButton = SortButton(title: "Sort by Date")
 
+    // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        NotificationCenter.default.addObserver(self, selector: #selector(HomeScreenVC.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-            
-        NotificationCenter.default.addObserver(self, selector: #selector(HomeScreenVC.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         loadCategories()
+        configureButtons()
         insertDefaultCategoriesData()
         configureNavigationBar()
         configureCollectionView()
@@ -113,7 +89,7 @@ class HomeScreenVC: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        //self.categoryCollectionView.selectItem(at: IndexPath(row: selectedIndex, section: 0), animated: true, scrollPosition: .centeredHorizontally)
+        self.categoryCollectionView.selectItem(at: IndexPath(row: selectedIndex, section: 0), animated: true, scrollPosition: .centeredHorizontally)
     }
     
     // MARK: - Selectors
@@ -177,7 +153,7 @@ class HomeScreenVC: UIViewController {
     }
     
     @objc private func sortByTask() {
-        let sortDescriptor = NSSortDescriptor(key: "name", ascending: true)
+        let sortDescriptor = NSSortDescriptor(key: "name", ascending: true, selector: #selector(NSString.localizedCaseInsensitiveCompare(_:)))
         loadItems(with: nil, by: [sortDescriptor])
         
         self.tasksTableView.reloadData()
@@ -200,27 +176,6 @@ class HomeScreenVC: UIViewController {
         
     @objc private func keyboardWillHide(notification: NSNotification) {
         self.view.frame.origin.y = 0
-    }
-    
-    public func updateCategories(categories: [Category]) {
-        self.categories = categories
-    }
-    
-    public func updateViews() {
-        self.categoryCollectionView.reloadData()
-        self.tasksTableView.reloadData()
-        
-    }
-    
-    public func updateSelectedIndex(aCategory: Category?) {
-        for i in 0..<categories.count {
-            if categories[i].name == aCategory?.name {
-                index = i
-            }
-        }
-        
-        currentCategory = categories[index]
-        self.categoryCollectionView.selectItem(at: IndexPath(row: index, section: 0), animated: true, scrollPosition: .centeredHorizontally)
     }
     
 }
@@ -292,7 +247,7 @@ extension HomeScreenVC {
         rightBarButton.tintColor = .systemBlue
         
         navigationItem.rightBarButtonItem = rightBarButton
-        self.title = "Welcome!"
+        self.title = "Task Manager"
         self.navigationController?.navigationBar.prefersLargeTitles = true
     }
 
@@ -310,53 +265,11 @@ extension HomeScreenVC {
         stackView.addArrangedSubview(sortByDateButton)
     }
     
-    
-    // MARK: - Insert Default Category Data
-    private func insertDefaultCategoriesData() {
-        if categories.count == 0 {
-            
-            let categories1 = Category(context: context)
-            categories1.name = "Home"
-            self.categories.append(categories1)
-            
-            let categories2 = Category(context: context)
-            categories2.name = "Business"
-            self.categories.append(categories2)
-            
-            let categories3 = Category(context: context)
-            categories3.name = "School"
-            self.categories.append(categories3)
-            
-            let categories4 = Category(context: context)
-            categories4.name = "Social"
-            self.categories.append(categories4)
-            
-            let categories5 = Category(context: context)
-            categories5.name = "Self-development"
-            self.categories.append(categories5)
-            
-            self.saveData()
-            self.loadCategories()
-            
-        }
-    }
-    
-    // MARK: - Segue Method
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-
-        if let subTaskVc = segue.destination as? SubTaskVC {
-            subTaskVc.currentTask = self.currentTask
-            subTaskVc.categoryIndex = self.selectedIndex
-            subTaskVc.categories = self.categories
-            subTaskVc.delegate = self
-        }
-        
-        if let categoryTVC = segue.destination as? CategoryTVC {
-            categoryTVC.delegate = self
-            categoryTVC.categories = self.categories
-        }
-        
-
+    private func configureButtons() {
+        NotificationCenter.default.addObserver(self, selector: #selector(HomeScreenVC.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(HomeScreenVC.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        sortByTaskButton.addTarget(self, action: #selector(sortByTask), for: .touchUpInside)
+        sortByDateButton.addTarget(self, action: #selector(sortByDate), for: .touchUpInside)
     }
 }
 
@@ -444,9 +357,9 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
             self.items[indexPath.row].isCompleted = !self.items[indexPath.row].isCompleted
             
             if self.items[indexPath.row].isCompleted {
-                self.categories[self.index].itemCounter += 1
+                self.categories[self.selectedIndex].itemCounter += 1
             } else {
-                self.categories[self.index].itemCounter -= 1
+                self.categories[self.selectedIndex].itemCounter -= 1
             }
                                     
             self.saveData()
@@ -455,7 +368,7 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
             DispatchQueue.main.async {
                 self.tasksTableView.reloadData()
                 self.categoryCollectionView.reloadData()
-                self.categoryCollectionView.selectItem(at: IndexPath(row: self.index, section: 0), animated: true, scrollPosition: .centeredHorizontally)
+                self.categoryCollectionView.selectItem(at: IndexPath(row: self.selectedIndex, section: 0), animated: true, scrollPosition: .centeredHorizontally)
             }
         }
         
@@ -477,12 +390,12 @@ extension HomeScreenVC: UISearchBarDelegate {
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        searchNotes(with: searchBar.text!)
+        searchTasks(with: searchBar.text!)
         self.tasksTableView.reloadData()
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        searchNotes(with: searchText)
+        searchTasks(with: searchText)
         if searchBar.text?.count == 0 {
             loadItems(with: nil, by: nil)
             
@@ -494,13 +407,86 @@ extension HomeScreenVC: UISearchBarDelegate {
         }
     }
     
-    private func searchNotes(with text: String) {
+}
+
+// MARK: - Helper Methods
+extension HomeScreenVC {
+    
+    private func insertDefaultCategoriesData() {
+        if categories.count == 0 {
+            
+            let categories1 = Category(context: context)
+            categories1.name = "Home"
+            self.categories.append(categories1)
+            
+            let categories2 = Category(context: context)
+            categories2.name = "Business"
+            self.categories.append(categories2)
+            
+            let categories3 = Category(context: context)
+            categories3.name = "School"
+            self.categories.append(categories3)
+            
+            let categories4 = Category(context: context)
+            categories4.name = "Social"
+            self.categories.append(categories4)
+            
+            let categories5 = Category(context: context)
+            categories5.name = "Self-development"
+            self.categories.append(categories5)
+            
+            self.saveData()
+            self.loadCategories()
+            
+        }
+    }
+    
+    // MARK: - Segue Method
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+
+        if let subTaskVc = segue.destination as? SubTaskVC {
+            subTaskVc.currentTask = self.currentTask
+            subTaskVc.categoryIndex = self.selectedIndex
+            subTaskVc.categories = self.categories
+            subTaskVc.delegate = self
+        }
+        
+        if let categoryTVC = segue.destination as? CategoryTVC {
+            categoryTVC.delegate = self
+            categoryTVC.categories = self.categories
+        }
+        
+    }
+    
+    // MARK: - Search Tasks Method
+    private func searchTasks(with text: String) {
         let predicate = NSPredicate(format: "name CONTAINS[cd] %@", text)
         loadItems(with: predicate, by: nil)
         
         self.categoryCollectionView.selectItem(at: IndexPath(row: selectedIndex, section: 0), animated: true, scrollPosition: .centeredHorizontally)
     }
     
+    // MARK: - Update / Delegate Methods
+    public func updateCategories(categories: [Category]) {
+        self.categories = categories
+    }
+    
+    public func updateViews() {
+        self.categoryCollectionView.reloadData()
+        self.tasksTableView.reloadData()
+        
+    }
+    
+    public func updateSelectedIndex(aCategory: Category?) {
+        for i in 0..<categories.count {
+            if categories[i].name == aCategory?.name {
+                selectedIndex = i
+            }
+        }
+        
+        currentCategory = categories[selectedIndex]
+        self.categoryCollectionView.selectItem(at: IndexPath(row: selectedIndex, section: 0), animated: true, scrollPosition: .centeredHorizontally)
+    }
 }
 
 // MARK: - Core Data Methods
@@ -522,7 +508,7 @@ extension HomeScreenVC {
     private func saveData () {
         do {
             try context.save()
-        }catch {
+        } catch {
             print("Error saving categories.. \(error.localizedDescription)")
         }
     }

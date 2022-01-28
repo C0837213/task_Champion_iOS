@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BA2485CD27A3BB1E00E1A2B7 /* SortButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA2485CC27A3BB1E00E1A2B7 /* SortButton.swift */; };
 		BA406F7D279CC98E0032C20E /* CategoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA406F7C279CC98E0032C20E /* CategoryCell.swift */; };
 		BA406F7F279CC9AB0032C20E /* TaskCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA406F7E279CC9AB0032C20E /* TaskCell.swift */; };
 		BA40E6AA279B8B7600927133 /* HomeScreenVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA40E6A9279B8B7600927133 /* HomeScreenVC.swift */; };
@@ -25,6 +26,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		BA2485CC27A3BB1E00E1A2B7 /* SortButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortButton.swift; sourceTree = "<group>"; };
 		BA406F7C279CC98E0032C20E /* CategoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryCell.swift; sourceTree = "<group>"; };
 		BA406F7E279CC9AB0032C20E /* TaskCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskCell.swift; sourceTree = "<group>"; };
 		BA40E6A9279B8B7600927133 /* HomeScreenVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreenVC.swift; sourceTree = "<group>"; };
@@ -71,6 +73,7 @@
 				D4CA18D327A0CED100E20B0C /* ImageCell.swift */,
 				D4CA18D527A0CEFA00E20B0C /* ImportButton.swift */,
 				BA4EDB1C27A1F01000683565 /* TaskLabel.swift */,
+				BA2485CC27A3BB1E00E1A2B7 /* SortButton.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -207,6 +210,7 @@
 				BAC7552F27A3835D00747403 /* Extensions.swift in Sources */,
 				D4CA18D627A0CEFA00E20B0C /* ImportButton.swift in Sources */,
 				D4E5B869279A272A0062F20B /* SceneDelegate.swift in Sources */,
+				BA2485CD27A3BB1E00E1A2B7 /* SortButton.swift in Sources */,
 				BA406F7D279CC98E0032C20E /* CategoryCell.swift in Sources */,
 				BA9F7E6627A0E07400B5F4E8 /* CategoryTVC.swift in Sources */,
 			);

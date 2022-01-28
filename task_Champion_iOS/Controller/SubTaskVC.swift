@@ -12,6 +12,18 @@ import MobileCoreServices
 
 class SubTaskVC: UIViewController {
     
+    // MARK: - Properties
+    private var recordingSession: AVAudioSession!
+    private var recorder: AVAudioRecorder!
+    private var player =  AVAudioPlayer()
+    private var audioFileName = ""
+    public var currentTask: Item?
+    public var categories = [Category]()
+    public var categoryIndex: Int?
+    public weak var delegate: HomeScreenVC?
+    private var isAudioPlaying: Bool = false
+    private var photos: [Data] = []
+    
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     private let detailsLabel = TaskLabel(title: "Task name: ")
@@ -91,7 +103,7 @@ class SubTaskVC: UIViewController {
         title = "Created at: \(formatter.string(from: (currentTask?.createdAt ?? Date()))) "
         if (currentTask?.photos != nil) {
             photos = currentTask!.photos!
-        }else{
+        } else{
             photos = []
         }
         imageCollectionView.reloadData()
@@ -101,23 +113,8 @@ class SubTaskVC: UIViewController {
     private let takePhotoButton = ImportButton(image: "camera.circle")
     private let recordAudioButton = ImportButton(image: "mic.circle")
     private let importAudioFileButton = ImportButton(image: "speaker.circle")
-    
-    var recordingSession: AVAudioSession!
-    
-    var recorder: AVAudioRecorder!
-    var player =  AVAudioPlayer ()
 
-    
-
-//    var selectedImages = [UIImage]()
-    private var audioFileName = ""
-    var currentTask: Item?
-    var categories = [Category]()
-    var categoryIndex: Int?
-    public weak var delegate: HomeScreenVC?
-    private var isAudioPlaying: Bool = false
-    var photos: [Data] = []
-
+    // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .crystalWhite
@@ -145,11 +142,12 @@ class SubTaskVC: UIViewController {
         currentTask?.name = taskTextField.text
         currentTask?.detail = detailsTextView.text
         saveData()
-        delegate?.updateViews()
         delegate?.updateSelectedIndex(aCategory: currentTask?.catFolder)
+        delegate?.updateViews()
         isAudioPlaying = false
     }
     
+    // MARK: - Selectors
     @objc private func importPhotoFromLibrary() {
         let imagePicker = UIImagePickerController()
         imagePicker.allowsEditing = true
@@ -171,7 +169,10 @@ class SubTaskVC: UIViewController {
         self.importAudFile()
     }
     
-    
+}
+
+// MARK: - UI Configuration Methods
+extension SubTaskVC {
     private func configureDetailsLabel(){
         view.addSubview(detailsLabel)
         
@@ -293,21 +294,10 @@ class SubTaskVC: UIViewController {
     
     private func configureButtons() {
         importPhotoButton.addTarget(self, action: #selector(importPhotoFromLibrary), for: .touchUpInside)
-        
         recordAudioButton.addTarget(self, action: #selector(recordingVoice), for: .touchUpInside)
-        
         importAudioFileButton.addTarget(self, action: #selector(importAudioFile), for: .touchUpInside)
-        
     }
     
-    private func saveData () {
-        do {
-            try context.save()
-        }catch {
-            print("Error saving categories.. \(error.localizedDescription)")
-        }
-    }
-
 }
 //MARK: Category Picker Delegate
 extension SubTaskVC: UIPickerViewDelegate, UIPickerViewDataSource {
@@ -589,4 +579,17 @@ extension SubTaskVC: AVAudioRecorderDelegate {
             self.audioTableView.reloadData()
         }
     }
+}
+
+// MARK: - Core Data Methods
+extension SubTaskVC {
+    
+    private func saveData() {
+        do {
+            try context.save()
+        } catch {
+            print("Error saving categories.. \(error.localizedDescription)")
+        }
+    }
+    
 }
