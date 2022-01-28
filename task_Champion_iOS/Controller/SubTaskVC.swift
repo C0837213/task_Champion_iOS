@@ -89,6 +89,18 @@ class SubTaskVC: UIViewController {
         formatter.timeStyle = .short
         formatter.dateStyle = .short
         title = "Created at: \(formatter.string(from: (currentTask?.createdAt ?? Date()))) "
+        let objects = currentTask!.photos!
+        if objects.count > 0 {
+            for object in objects {
+                do {
+                    let unarchivedObj = try NSKeyedUnarchiver.unarchivedObject(ofClass: NSData.self, from: object)! as Data
+                    photos.append(unarchivedObj)
+                } catch {
+                    print("Cannot unarchive the data \(error)")
+                }
+            }
+        }
+        
     }
     
     private let importPhotoButton = ImportButton(image: "photo.circle.fill")
@@ -110,6 +122,7 @@ class SubTaskVC: UIViewController {
     var categoryIndex: Int?
     public weak var delegate: HomeScreenVC?
     private var isAudioPlaying: Bool = false
+    var photos: [Data] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -330,14 +343,15 @@ extension SubTaskVC: UICollectionViewDelegateFlowLayout, UICollectionViewDataSou
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return  0
+        return  photos.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ImageCell.identifier, for: indexPath) as? ImageCell else { return UICollectionViewCell() }
-        //TODO:
-        cell.setData(image: UIImage(data: (currentTask?.photos![indexPath.row])!))
+
+        
+        cell.setData(image: UIImage(data: (photos[indexPath.row]) as Data))
         
         return cell
     }
@@ -421,40 +435,24 @@ extension SubTaskVC: UIImagePickerControllerDelegate, UINavigationControllerDele
         
         if let image = info[.editedImage] as? UIImage {
             selectedImages.append(image)
-            if let data = image.pngData() {
-                self.currentTask?.photos?.append(data)
-                        self.saveData()
-            }
-//                data.write(toFile: localPath!, atomically: true)
-//                let photoURL = URL.init(fileURLWithPath: localPath!)
-//        if(self.currentTask?.photos == nil) {
-//            currentTask?.photos = []
-//        }
 
+            for img in selectedImages{
+                let data : NSData = NSData(data: img.pngData()!)
+                do {
+                    let coreDataObject = try NSKeyedArchiver.archivedData(withRootObject: data, requiringSecureCoding: true)
+                    photos.append(coreDataObject)
+                }catch{
+                    print("Can't archive data \(error)")
+                }
+            }
+            self.currentTask?.photos = photos
+            self.saveData()
         }
         
         picker.dismiss(animated: true, completion: nil)
         imageCollectionView.reloadData()
-        
-        
-        
-        // Get imgURL
-//        if let imgUrl = info[UIImagePickerController.InfoKey.imageURL] as? URL{
-//                let imgName = imgUrl.lastPathComponent
-//                let documentDirectory = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first
-//                let localPath = documentDirectory?.appending(imgName)
-
-//                let image = info[UIImagePickerController.InfoKey.originalImage] as! UIImage
-//                let data = image.pngData()!
-////                data.write(toFile: localPath!, atomically: true)
-////                let photoURL = URL.init(fileURLWithPath: localPath!)
-//            if(self.currentTask?.photos == nil) {
-//                currentTask?.photos = []
-//            }
-//        self.currentTask?.photos?.append(data)
-//                self.saveData()
-//            }
-    }
+        }
+    
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true, completion: nil)
