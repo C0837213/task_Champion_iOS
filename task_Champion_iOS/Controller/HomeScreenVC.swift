@@ -15,6 +15,7 @@ class HomeScreenVC: UIViewController {
     private var items = [Item]()
     private var selectedIndex: Int = 0
     private var currentTask: Item? = nil
+    private var index: Int = 0
     
     //context
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
@@ -109,10 +110,10 @@ class HomeScreenVC: UIViewController {
         configureAddTaskButton()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
-        self.categoryCollectionView.selectItem(at: IndexPath(row: 0, section: 0), animated: true, scrollPosition: .centeredHorizontally)
+        //self.categoryCollectionView.selectItem(at: IndexPath(row: selectedIndex, section: 0), animated: true, scrollPosition: .centeredHorizontally)
     }
     
     // MARK: - Selectors
@@ -125,20 +126,40 @@ class HomeScreenVC: UIViewController {
         let alert = UIAlertController(title: "Add a new task", message: "Please enter the name of the task", preferredStyle: .alert)
         let addAction = UIAlertAction(title: "Add", style: .default) { action in
             
-            let newItem = Item(context: self.context)
-            newItem.name = textField.text!
-            newItem.isCompleted = false
-            newItem.catFolder = self.currentCategory!
-            self.items.append(newItem)
-            self.saveData()
+            guard let text = textField.text else { return }
             
-            DispatchQueue.main.async {
-                self.tasksTableView.reloadData()
-                self.categoryCollectionView.reloadData()
-                self.categoryCollectionView.selectItem(at: IndexPath(row: self.selectedIndex, section: 0), animated: true, scrollPosition: .centeredHorizontally)
+            if text.count > 0 {
+                
+                for item in self.items {
+                    if text.lowercased() == item.name?.lowercased() {
+                        
+                        let textAlert = UIAlertController(title: "Please enter a different task name", message: "Task already exists", preferredStyle: .alert)
+                        
+                        textAlert.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))
+                        
+                        self.present(textAlert, animated: true, completion: nil)
+                        
+                        return
+                    }
+                }
+                
+                let newItem = Item(context: self.context)
+                newItem.name = textField.text!
+                newItem.isCompleted = false
+                newItem.catFolder = self.currentCategory!
+                self.items.append(newItem)
+                self.saveData()
+                
+                DispatchQueue.main.async {
+                    self.tasksTableView.reloadData()
+                    self.categoryCollectionView.reloadData()
+                    self.categoryCollectionView.selectItem(at: IndexPath(row: self.selectedIndex, section: 0), animated: true, scrollPosition: .centeredHorizontally)
+                }
+                
+                self.loadItems()
             }
             
-            self.loadItems()
+            
             
         }
         
@@ -188,6 +209,18 @@ class HomeScreenVC: UIViewController {
     public func updateViews() {
         self.categoryCollectionView.reloadData()
         self.tasksTableView.reloadData()
+        
+    }
+    
+    public func updateSelectedIndex(aCategory: Category?) {
+        for i in 0..<categories.count {
+            if categories[i].name == aCategory?.name {
+                index = i
+            }
+        }
+        
+        currentCategory = categories[index]
+        self.categoryCollectionView.selectItem(at: IndexPath(row: index, section: 0), animated: true, scrollPosition: .centeredHorizontally)
     }
     
 }
@@ -411,18 +444,18 @@ extension HomeScreenVC: UITableViewDelegate, UITableViewDataSource {
             self.items[indexPath.row].isCompleted = !self.items[indexPath.row].isCompleted
             
             if self.items[indexPath.row].isCompleted {
-                self.categories[self.selectedIndex].itemCounter += 1
+                self.categories[self.index].itemCounter += 1
             } else {
-                self.categories[self.selectedIndex].itemCounter -= 1
+                self.categories[self.index].itemCounter -= 1
             }
-            
+                                    
             self.saveData()
             self.loadItems(with: nil, by: nil)
             
             DispatchQueue.main.async {
                 self.tasksTableView.reloadData()
                 self.categoryCollectionView.reloadData()
-                self.categoryCollectionView.selectItem(at: IndexPath(row: self.selectedIndex, section: 0), animated: true, scrollPosition: .centeredHorizontally)
+                self.categoryCollectionView.selectItem(at: IndexPath(row: self.index, section: 0), animated: true, scrollPosition: .centeredHorizontally)
             }
         }
         
@@ -515,16 +548,4 @@ extension HomeScreenVC {
         
     }
 }
-
-extension UIColor {
-    static let crystalWhite = UIColor(red: 233/255, green: 236/255, blue: 244/255, alpha: 1)
-    static let lightCharcoal = UIColor(red: 36/255, green: 44/255, blue: 75/255, alpha: 1)
-}
-
-extension Item {
-    override public func awakeFromInsert() {
-        setPrimitiveValue(Date(), forKey: "createdAt")
-    }
-}
-
 

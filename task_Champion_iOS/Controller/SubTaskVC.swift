@@ -152,6 +152,7 @@ class SubTaskVC: UIViewController {
         currentTask?.detail = detailsTextView.text
         saveData()
         delegate?.updateViews()
+        delegate?.updateSelectedIndex(aCategory: currentTask?.catFolder)
         isAudioPlaying = false
     }
     
@@ -330,6 +331,11 @@ extension SubTaskVC: UIPickerViewDelegate, UIPickerViewDataSource {
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        if currentTask?.isCompleted == true {
+            pickerView.isUserInteractionEnabled = false
+            return
+        }
+        
         currentTask?.catFolder = categories[row]
     }
     
