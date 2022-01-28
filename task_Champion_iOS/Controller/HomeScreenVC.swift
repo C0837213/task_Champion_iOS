@@ -473,6 +473,7 @@ extension HomeScreenVC {
     
     public func updateViews() {
         self.categoryCollectionView.reloadData()
+        self.loadItems(with: nil, by: nil)
         self.tasksTableView.reloadData()
         
     }
