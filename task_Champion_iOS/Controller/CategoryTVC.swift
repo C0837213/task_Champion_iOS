@@ -107,6 +107,16 @@ class CategoryTVC: UITableViewController {
         
         let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { action, view, completion in
             
+            if self.categories.count == 1 {
+                let alert = UIAlertController(title: "You can't delete this category", message: "There must be at least one category.", preferredStyle: .alert)
+                
+                alert.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))
+                
+                self.present(alert, animated: true, completion: nil)
+                
+                return
+            }
+            
             self.context.delete(self.categories[indexPath.row])
             self.saveData()
             self.categories.remove(at: indexPath.row)

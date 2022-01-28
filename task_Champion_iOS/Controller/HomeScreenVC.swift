@@ -244,10 +244,10 @@ extension HomeScreenVC {
     private func configureNavigationBar() {
         view.backgroundColor = .crystalWhite
         let rightBarButton = UIBarButtonItem(image: UIImage(systemName: "book.circle"), style: .plain, target: self, action: #selector(displayCategories))
-        rightBarButton.tintColor = .systemBlue
+        rightBarButton.tintColor = .systemCyan
         
         navigationItem.rightBarButtonItem = rightBarButton
-        self.title = "Task Manager"
+        self.title = "Home Page"
         self.navigationController?.navigationBar.prefersLargeTitles = true
     }
 
